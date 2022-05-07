@@ -1,10 +1,11 @@
 use crate::Entity;
 use std::collections::HashMap;
 use std::fmt::{Debug, Error, Formatter};
+use std::ops::Index;
 
 pub struct World<'a> {
     name: String,
-    entities: HashMap<String, Box<&'a dyn Entity>>,
+    entities: HashMap<String, &'a Box<dyn Entity>>,
 }
 
 impl<'a> World<'a> {
@@ -15,8 +16,13 @@ impl<'a> World<'a> {
         }
     }
 
-    pub fn add_entity(&'a mut self, e: Box<&'a dyn Entity>) -> Result<&'a mut Self, Error> {
-        self.entities.insert(e.get_id().to_string(), e);
+    pub fn add_entity(&'a mut self, e: &'a Vec<Box<dyn Entity>>) -> Result<&'a mut Self, Error> {
+        //self.entities.insert(e.get_id().to_string(), e);
+        for i in 0..e.len() {
+            let entity = e.index(i);
+            self.entities
+                .insert(entity.get_id().to_string(), entity.clone());
+        }
         Ok(self)
     }
 }

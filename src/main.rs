@@ -11,16 +11,23 @@ const AGENT_COUNT: usize = 10;
 const TEAM_SIZE: usize = AGENT_COUNT / 2;
 
 fn main() {
-    let mut justin = Human::new("Justin", 100);
-    println!("{:?}", justin);
     let mut world = World::new("Zapata");
-    println!("{:?}", world);
-    match world.add_entity(Box::new(&justin)) {
+    let mut players: Vec<Box<dyn Entity>> = Vec::with_capacity(AGENT_COUNT);
+
+    for i in 0..AGENT_COUNT {
+        players.push(Box::new(
+            Human::new(format!("Player #{}", i).as_str(), 100).clone(),
+        ));
+    }
+
+    println!("{:?}\n\nAdding...\n\n", players);
+
+    match world.add_entity(&players) {
         Ok(world) => {
             println!("{:?}", world);
         }
-        Err(e) => {
-            panic!("Failed to add human {:?}:\n\t{} ", justin, e);
+        Err(E) => {
+            panic!("Failed to add players: {}", E)
         }
     }
 }

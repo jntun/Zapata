@@ -1,7 +1,7 @@
 use crate::Entity;
 use std::fmt::Error;
 
-#[derive(Debug)]
+#[derive(Clone)]
 #[allow(dead_code)]
 pub struct Human {
     name: String,
