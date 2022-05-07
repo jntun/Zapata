@@ -1,4 +1,5 @@
 mod entity;
+mod error;
 mod human;
 mod world;
 
