@@ -7,8 +7,9 @@ use human::Human;
 use world::World;
 
 const MAX_ENTITIES: u64 = 128;
-const AGENT_COUNT: usize = 10;
-const TEAM_SIZE: usize = AGENT_COUNT / 2;
+const AGENT_COUNT: usize = 11;
+const TEAM_COUNT: usize = 2;
+const TEAM_SIZE: usize = AGENT_COUNT / TEAM_COUNT;
 
 fn main() {
     let mut world = World::new("Zapata");
