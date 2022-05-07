@@ -16,7 +16,7 @@ fn main() {
             println!("{:?}", world);
         }
         Err(e) => {
-            panic!("Failed to add human {:?}:\n\t{} ", justin), e;
+            panic!("Failed to add human {:?}:\n\t{} ", justin, e);
         }
     }
 }
