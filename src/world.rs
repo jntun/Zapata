@@ -1,3 +1,5 @@
+use crate::error;
+use crate::error::MaxEntitiesError;
 use crate::Entity;
 use std::collections::HashMap;
 use std::fmt::{Debug, Error, Formatter};
@@ -18,12 +20,17 @@ impl<'a> World<'a> {
         }
     }
 
-    pub fn add_entity(&'a mut self, e: &'a Vec<Box<dyn Entity>>) -> Result<&'a mut Self, Error> {
-        if self.entities.len() == self.max_entities {
-            panic!("max entities reached")
-        }
+    pub fn add_entity(
+        &'a mut self,
+        e: &'a Vec<Box<dyn Entity>>,
+    ) -> Result<&'a mut Self, MaxEntitiesError> {
         //self.entities.insert(e.get_id().to_string(), e);
         for i in 0..e.len() {
+            if self.entities.len() == self.max_entities {
+                return Err(MaxEntitiesError::new(
+                    format!("max entities reached - {}", self.max_entities).as_str(),
+                ));
+            }
             let entity = e.index(i);
             self.entities
                 .insert(entity.get_id().to_string(), entity.clone());
