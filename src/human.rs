@@ -1,5 +1,6 @@
 use crate::Entity;
-use std::fmt::Error;
+use std::fmt::{Debug, Display};
+use std::fmt::{Error, Formatter};
 
 #[derive(Clone)]
 #[allow(dead_code)]
@@ -33,5 +34,17 @@ impl Entity for Human {
     fn get_id(&self) -> &str {
         // TODO: make real
         &self.name
+    }
+}
+
+impl Display for Human {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{} - {}", self.get_display_name(), self.current_health)
+    }
+}
+
+impl Debug for Human {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{} - {}", self.get_display_name(), self.current_health)
     }
 }
