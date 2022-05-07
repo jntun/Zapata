@@ -5,18 +5,23 @@ use std::ops::Index;
 
 pub struct World<'a> {
     name: String,
+    max_entities: usize,
     entities: HashMap<String, &'a Box<dyn Entity>>,
 }
 
 impl<'a> World<'a> {
-    pub fn new(name: &str) -> Self {
+    pub fn new(name: &str, max_entities: usize, team_count: usize, agent_count: usize) -> Self {
         Self {
             name: name.to_string(),
-            entities: HashMap::new(),
+            max_entities,
+            entities: HashMap::with_capacity(max_entities),
         }
     }
 
     pub fn add_entity(&'a mut self, e: &'a Vec<Box<dyn Entity>>) -> Result<&'a mut Self, Error> {
+        if self.entities.len() == self.max_entities {
+            panic!("max entities reached")
+        }
         //self.entities.insert(e.get_id().to_string(), e);
         for i in 0..e.len() {
             let entity = e.index(i);
