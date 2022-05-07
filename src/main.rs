@@ -6,6 +6,10 @@ use entity::Entity;
 use human::Human;
 use world::World;
 
+const MAX_ENTITIES: u64 = 128;
+const AGENT_COUNT: usize = 10;
+const TEAM_SIZE: usize = AGENT_COUNT / 2;
+
 fn main() {
     let mut justin = Human::new("Justin", 100);
     println!("{:?}", justin);
