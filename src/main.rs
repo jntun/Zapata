@@ -27,8 +27,8 @@ fn main() {
         Ok(world) => {
             println!("{:?}", world);
         }
-        Err(E) => {
-            panic!("Failed to add players: {}", E)
+        Err(e) => {
+            panic!("Failed to add players: {}", e)
         }
     }
 }
