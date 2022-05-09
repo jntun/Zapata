@@ -21,10 +21,10 @@ impl Human {
 }
 
 impl Entity for Human {
-    fn tick(&mut self) -> Result<&mut Self, Error> {
-        println!("{}", self.name);
+    fn tick(&mut self) -> Option<error::TickError> {
+        println!("{} - ticked", self);
 
-        Ok(self)
+        None
     }
 
     fn get_display_name(&self) -> &str {

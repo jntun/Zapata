@@ -1,11 +1,8 @@
-use std::fmt::Debug;
-use std::fmt::Error;
-use std::fmt::Formatter;
+use crate::error;
+use std::fmt::{Debug, Formatter};
 
 pub trait Entity {
-    fn tick(&mut self) -> Result<&mut Self, Error>
-    where
-        Self: Sized;
+    fn tick(&mut self) -> Option<error::TickError>;
 
     fn get_display_name(&self) -> &str;
     fn get_id(&self) -> &str;

@@ -46,8 +46,18 @@ impl Entity for World<'_> {
     {
         todo!()
     }
-    fn get_display_name(&self) -> &str {
-        &self.name
+}
+
+impl Entity for World {
+    fn tick(&mut self) -> Option<error::TickError> {
+        for (k, e) in self.entities.iter_mut() {
+            match e.tick() {
+                Some(e) => return Some(e),
+                None => continue,
+            }
+        }
+
+        None
     }
     fn get_id(&self) -> &str {
         todo!()
