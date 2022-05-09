@@ -59,7 +59,8 @@ impl Entity for World {
 
         None
     }
-    fn get_id(&self) -> &str {
+
+    fn get_id(&self) -> u64 {
         todo!()
     }
 }

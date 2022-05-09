@@ -1,3 +1,4 @@
+use crate::error;
 use crate::Entity;
 use std::fmt::{Debug, Display};
 use std::fmt::{Error, Formatter};
@@ -5,15 +6,15 @@ use std::fmt::{Error, Formatter};
 #[derive(Clone)]
 #[allow(dead_code)]
 pub struct Human {
-    name: String,
+    id: u64,
     current_health: u64,
     max_health: u64,
 }
 
 impl Human {
-    pub fn new(name: &str, max_health: u64) -> Self {
+    pub fn new(id: u64, name: String, max_health: u64) -> Self {
         Self {
-            name: name.to_string(),
+            id,
             current_health: max_health,
             max_health,
         }
@@ -27,13 +28,8 @@ impl Entity for Human {
         None
     }
 
-    fn get_display_name(&self) -> &str {
-        &self.name
-    }
-
-    fn get_id(&self) -> &str {
-        // TODO: make real
-        &self.name
+    fn get_id(&self) -> u64 {
+        self.id
     }
 }
 
