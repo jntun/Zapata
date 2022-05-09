@@ -5,46 +5,35 @@ use std::collections::HashMap;
 use std::fmt::{Debug, Error, Formatter};
 use std::ops::Index;
 
-pub struct World<'a> {
+pub struct World {
     name: String,
     max_entities: usize,
-    entities: HashMap<String, &'a Box<dyn Entity>>,
+    entities: HashMap<String, Box<dyn Entity>>,
 }
 
-impl<'a> World<'a> {
+impl World {
+    pub fn add_entity<T: 'static + Entity + Copy>(
+        &mut self,
+        entities: Vec<T>,
+    ) -> Result<&mut Self, MaxEntitiesError> {
+        for e in entities.iter() {
+            if self.entities.len() == self.max_entities {
+                return Err(MaxEntitiesError::new(
+                    format!("max entities reached - {}", self.max_entities).as_str(),
+                ));
+            }
+            self.entities
+                .insert(e.get_id().to_string(), Box::new(e.clone()));
+        }
+        Ok(self)
+    }
+
     pub fn new(name: &str, max_entities: usize, team_count: usize, agent_count: usize) -> Self {
         Self {
             name: name.to_string(),
             max_entities,
             entities: HashMap::with_capacity(max_entities),
         }
-    }
-
-    pub fn add_entity(
-        &'a mut self,
-        e: &'a Vec<Box<dyn Entity>>,
-    ) -> Result<&'a mut Self, MaxEntitiesError> {
-        //self.entities.insert(e.get_id().to_string(), e);
-        for i in 0..e.len() {
-            if self.entities.len() == self.max_entities {
-                return Err(MaxEntitiesError::new(
-                    format!("max entities reached - {}", self.max_entities).as_str(),
-                ));
-            }
-            let entity = e.index(i);
-            self.entities
-                .insert(entity.get_id().to_string(), entity.clone());
-        }
-        Ok(self)
-    }
-}
-
-impl Entity for World<'_> {
-    fn tick(&mut self) -> Result<&mut Self, Error>
-    where
-        Self: Sized,
-    {
-        todo!()
     }
 }
 
