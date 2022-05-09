@@ -22,7 +22,7 @@ fn main() {
 
     for i in 0..DEFAULT_AGENT_COUNT {
         let id = i as u64;
-        players.push(Human::new(id, "Player".to_string(), 100));
+        players.push(Human::new(id, 100));
     }
 
     println!("{:?}\n\nAdding...\n\n", players);

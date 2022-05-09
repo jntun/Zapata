@@ -12,7 +12,7 @@ pub struct Human {
 }
 
 impl Human {
-    pub fn new(id: u64, name: String, max_health: u64) -> Self {
+    pub fn new(id: u64, max_health: u64) -> Self {
         Self {
             id,
             current_health: max_health,
