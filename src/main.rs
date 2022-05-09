@@ -18,19 +18,34 @@ fn main() {
         DEFAULT_TEAM_COUNT,
         DEFAULT_AGENT_COUNT,
     );
-    let mut players: Vec<Box<dyn Entity>> = Vec::with_capacity(DEFAULT_AGENT_COUNT);
+    let mut players: Vec<Human> = Vec::with_capacity(DEFAULT_AGENT_COUNT);
 
     for i in 0..DEFAULT_AGENT_COUNT {
-        players.push(Box::new(
-            Human::new(format!("Player #{}", i).as_str(), 100).clone(),
-        ));
+        let id = i as u64;
+        players.push(Human::new(id, "Player".to_string(), 100));
     }
 
     println!("{:?}\n\nAdding...\n\n", players);
 
-    match world.add_entity(&players) {
+    let mut running = false;
+    let mut tick = 0;
+    match world.add_entity(players) {
         Ok(world) => {
-            println!("{:?}", world);
+            println!("starting world...");
+            running = true;
+            while running {
+                if tick == 1000 {
+                    running = false;
+                }
+
+                match world.tick() {
+                    Some(e) => panic!("Tick #{} failed - {}", tick, e),
+                    None => {
+                        tick += 1;
+                    }
+                }
+            }
+            println!("done. ran for {} ticks", tick);
         }
         Err(e) => {
             panic!("Failed to add players: {}", e)
