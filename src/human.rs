@@ -3,7 +3,7 @@ use crate::Entity;
 use std::fmt::{Debug, Display};
 use std::fmt::{Error, Formatter};
 
-#[derive(Clone)]
+#[derive(Copy, Clone)]
 #[allow(dead_code)]
 pub struct Human {
     id: u64,
