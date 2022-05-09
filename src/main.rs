@@ -7,8 +7,8 @@ use entity::Entity;
 use human::Human;
 use world::World;
 
-const DEFAULT_MAX_ENTITIES: usize = 128;
-const DEFAULT_AGENT_COUNT: usize = 11;
+const DEFAULT_MAX_ENTITIES: usize = 65536;
+const DEFAULT_AGENT_COUNT: usize = 128;
 const DEFAULT_TEAM_COUNT: usize = 2;
 
 fn main() {
