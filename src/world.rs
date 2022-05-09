@@ -2,8 +2,7 @@ use crate::error;
 use crate::error::MaxEntitiesError;
 use crate::Entity;
 use std::collections::HashMap;
-use std::fmt::{Debug, Error, Formatter};
-use std::ops::Index;
+use std::fmt::{Debug, Formatter};
 
 pub struct World {
     name: String,
@@ -54,9 +53,9 @@ impl Entity for World {
     }
 }
 
-impl Debug for World<'_> {
+impl Debug for World {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        f.debug_struct(self.get_display_name())
+        f.debug_struct(self.name.as_str())
             .field("entity count", &self.entities.len())
             .finish()
     }

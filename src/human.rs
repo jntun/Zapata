@@ -35,12 +35,12 @@ impl Entity for Human {
 
 impl Display for Human {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{} - {}", self.get_display_name(), self.current_health)
+        f.write_fmt(format_args!("test {}", self.current_health))
     }
 }
 
 impl Debug for Human {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{} - {}", self.get_display_name(), self.current_health)
+        f.debug_struct("human").finish()
     }
 }
