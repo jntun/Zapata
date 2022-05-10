@@ -1,7 +1,7 @@
 use crate::error;
 use crate::Entity;
+use std::fmt::Formatter;
 use std::fmt::{Debug, Display};
-use std::fmt::{Error, Formatter};
 
 #[derive(Copy, Clone)]
 #[allow(dead_code)]
