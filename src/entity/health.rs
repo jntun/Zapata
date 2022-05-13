@@ -11,7 +11,7 @@ pub trait Healther: Entity {
 }
 
 pub trait Attacker: Entity {
-    fn attack<T: Healther>(&mut self, target: &mut T)  -> Damage;
+    fn attack<T: Healther>(&mut self, target: &mut T);
     fn get_damage(&self) -> Damage;
 }
 

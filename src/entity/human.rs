@@ -29,10 +29,9 @@ impl Human {
 }
 
 impl Attacker for Human {
-    fn attack<T: Healther>(&mut self, target: &mut T) -> Damage {
-        let dmg = self.get_damage(); // TODO dmg calculations
+    fn attack<T: Healther>(&mut self, target: &mut T) {
+        let dmg = self.get_damage();
         target.do_damage(dmg);
-        dmg
     }
 
     fn get_damage(&self) -> Damage {
