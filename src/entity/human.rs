@@ -1,5 +1,5 @@
-use super::health::{HealthTracker, Health};
 use super::Entity;
+use super::health::{Healther, Attacker, HealthStat, Health, Damage};
 use super::TickError;
 use std::fmt::Formatter;
 use std::fmt::{Debug, Display};
@@ -10,35 +10,51 @@ const DEFAULT_NAME: &str = "default player";
 #[allow(dead_code)]
 pub struct Human {
     name: String,
-    health: HealthTracker,
+    health: HealthStat,
 }
 
 impl Human {
-    pub fn new(max_health: u64, start_health: Option<u64>, name: Option<String>) -> Self {
+    pub fn new(max_health: u64, start_health: Option<Health>, name: Option<String>) -> Self {
         match name {
             Some(name) => Self {
                 name,
-                health: HealthTracker::new(max_health, start_health),
+                health: HealthStat::new(max_health, start_health),
             },
             None => Self {
                 name: String::from(DEFAULT_NAME),
-                health: HealthTracker::new(max_health, start_health),
+                health: HealthStat::new(max_health, start_health),
             }
         }
     }
 }
 
-impl Health for Human {
-    fn do_damage(&mut self, dmg: u64) {
-        self.health.do_damage(dmg)
+impl Attacker for Human {
+    fn attack<T: Healther>(&mut self, target: &mut T) -> Damage {
+        let dmg = self.get_damage(); // TODO dmg calculations
+        target.do_damage(dmg);
+        dmg
     }
 
-    fn get_current(&self) -> u64 {
-        self.health.get_current()
+    fn get_damage(&self) -> Damage {
+        1 as u64
+    }
+}
+
+impl Healther for Human {
+    fn do_damage(&mut self, dmg: Damage) {
+        self.health -= dmg;
     }
 
-    fn get_max(&self) -> u64 {
-        self.health.get_max()
+    fn set_max(&mut self, health: Health) {
+        self.health.max = health;
+    }
+
+    fn get_current(&self) -> Health {
+        self.health.current
+    }
+
+    fn get_max(&self) -> Health {
+        self.health.max
     }
 }
 
@@ -52,15 +68,15 @@ impl Entity for Human {
 
 impl Display for Human {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        f.write_fmt(format_args!("{} - {}", self.name, self.health.get_current()))
+        f.write_fmt(format_args!("{} - {}", self.name, self.get_current()))
     }
 }
 
 impl Debug for Human {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("human")
-            .field("health", &self.health.get_current())
-            .field("max_health", &self.health.get_max())
+            .field("health", &self.get_current())
+            .field("max_health", &self.get_max())
             .finish()
     }
 }
@@ -70,7 +86,7 @@ impl Default for Human {
     fn default() -> Self {
         Self {
             name: String::from(DEFAULT_NAME),
-            health: HealthTracker::new(DEFAULT_HEALTH, None),
+            health: HealthStat::new(DEFAULT_HEALTH, None),
         }
     }
 }

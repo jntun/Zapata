@@ -4,6 +4,7 @@ pub(crate) mod health;
 use crate::error::TickError;
 use std::fmt::{Debug, Formatter};
 
+
 pub trait Entity {
     fn tick(&mut self) -> Option<TickError>;
 }
