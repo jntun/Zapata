@@ -63,6 +63,10 @@ impl Entity for Human {
 
         None
     }
+
+    fn get_name(&self) -> &str {
+        self.name.as_str()
+    }
 }
 
 impl Display for Human {

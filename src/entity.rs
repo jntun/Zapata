@@ -7,6 +7,7 @@ use std::fmt::{Debug, Formatter};
 
 pub trait Entity {
     fn tick(&mut self) -> Option<TickError>;
+    fn get_name(&self) -> &str;
 }
 
 impl Debug for dyn Entity {
