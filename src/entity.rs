@@ -1,14 +1,15 @@
-use crate::error;
+pub(crate) mod human;
+pub(crate) mod health;
+
+use crate::error::TickError;
 use std::fmt::{Debug, Formatter};
 
 pub trait Entity {
-    fn tick(&mut self) -> Option<error::TickError>;
-
-    fn get_id(&self) -> u64;
+    fn tick(&mut self) -> Option<TickError>;
 }
 
 impl Debug for dyn Entity {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        f.write_fmt(format_args!("Entity#{}", self.get_id()))
+        f.write_fmt(format_args!("Entity"))
     }
 }
