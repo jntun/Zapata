@@ -1,3 +1,4 @@
+use crate::physics::{PhysicsEntity, PhysxStats, vec3::Vec3};
 use super::Entity;
 use super::health::{Healther, Attacker, HealthStat, Health, Damage};
 use super::TickError;
@@ -5,33 +6,55 @@ use std::fmt::Formatter;
 use std::fmt::{Debug, Display};
 
 const DEFAULT_HEALTH: u64 = 100;
-const DEFAULT_NAME: &str = "default player";
+const DEFAULT_MASS:   f64 = 20.0;
+const DEFAULT_NAME:  &str = "default player";
 
 #[allow(dead_code)]
 pub struct Human {
-    name: String,
+    name:   String,
     health: HealthStat,
+    physx:  PhysxStats
 }
 
 impl Human {
-    pub fn new(max_health: u64, start_health: Option<Health>, name: Option<String>) -> Self {
+    pub fn new(max_health: u64, start_health: Option<Health>, name: Option<String>, position: Option<Vec3>) -> Self {
         match name {
             Some(name) => Self {
                 name,
                 health: HealthStat::new(max_health, start_health),
+                physx: PhysxStats::new(DEFAULT_MASS, position),
             },
             None => Self {
                 name: String::from(DEFAULT_NAME),
                 health: HealthStat::new(max_health, start_health),
+                physx: PhysxStats::new(DEFAULT_MASS, position),
             }
         }
     }
 }
 
+impl PhysicsEntity for Human {
+    fn apply_force(&mut self, force: Vec3) {
+        self.physx.momentum *= force
+    }
+
+    fn get_mass(&self) -> f64 {
+        self.physx.mass
+    }
+
+    fn get_momentum(&self) -> Vec3 {
+        self.physx.momentum
+    }
+
+    fn get_pos(&self) -> Vec3 {
+        self.physx.position
+    }
+}
+
 impl Attacker for Human {
     fn attack<T: Healther>(&mut self, target: &mut T) {
-        let dmg = self.get_damage();
-        target.do_damage(dmg);
+        target.do_damage(self.get_damage());
+        println!("{} just attacked '{}' for {} dmg", self, target.get_name(), self.get_damage());
     }
 
     fn get_damage(&self) -> Damage {
@@ -77,9 +100,10 @@ impl Display for Human {
 
 impl Debug for Human {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        f.debug_struct("human")
+        f.debug_struct(self.get_name())
             .field("health", &self.get_current())
             .field("max_health", &self.get_max())
+            .field("physx", &self.physx)
             .finish()
     }
 }
@@ -90,6 +114,7 @@ impl Default for Human {
         Self {
             name: String::from(DEFAULT_NAME),
             health: HealthStat::new(DEFAULT_HEALTH, None),
+            physx: PhysxStats::default(),
         }
     }
 }
