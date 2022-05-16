@@ -20,9 +20,9 @@ pub(crate) struct PhysxStats {
 impl PhysxStats {
     pub fn new(mass: f64, position: Option<Vec3>) -> Self {
         match position {
-            Some(pos) => Self {
+            Some(position) => Self {
                 momentum: Vec3::new(0.0, 0.0, 0.0),
-                position: pos,
+                position,
                 mass,
             },
             None => Self {
