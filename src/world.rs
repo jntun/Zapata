@@ -1,27 +1,61 @@
-use crate::error::MaxEntitiesError;
-use std::collections::HashMap;
 use std::fmt::{Debug, Formatter};
+use std::cell::RefCell;
+use std::rc::Rc;
+use crate::entity::Entity;
+use crate::error::TickError;
+
+
+const DEFAULT_NAME: &str = "Zapata";
 
 pub struct World {
     name: String,
-    max_entities: usize,
-    entities: HashMap<String, Box<dyn Entity>>,
+    entities: Vec<Rc<RefCell<Box<dyn Entity>>>>,
 }
 
 impl World {
-    pub fn new(name: &str, max_entities: usize, team_count: usize, agent_count: usize) -> Self {
-        Self {
-            name: name.to_string(),
-            max_entities,
-            entities: HashMap::with_capacity(max_entities),
+    pub fn new(name: Option<String>) -> Self {
+        let entities = Vec::new();
+        match name {
+            Some(name) => Self {
+                name,
+                entities,
+            },
+            None => Self {
+                name: String::from(DEFAULT_NAME),
+                entities,
+            }
         }
+    }
+
+    pub fn add_entity(&mut self, e: Rc<RefCell<Box<dyn Entity>>>) {
+        self.entities.push(e.clone());
+    }
+
+
+}
+
+impl Entity for World {
+    fn tick(&mut self) -> Option<TickError> {
+        for entity in self.entities.iter() {
+            match entity.try_borrow_mut() {
+                Ok(mut e) => {
+                    e.tick();
+                },
+                Err(e) => return Some(TickError::new(format!("world.tick(): failed to borrow entity - {}", e).as_str())),
+            }
+        }
+        None
+    }
+
+    fn get_name(&self) -> &str {
+        self.name.as_str()
     }
 }
 
 impl Debug for World {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        f.debug_struct(self.name.as_str())
-            .field("entity count", &self.entities.len())
+        f.debug_struct(self.get_name())
+            .field("entities", &self.entities)
             .finish()
     }
 }
