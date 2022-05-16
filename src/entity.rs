@@ -6,7 +6,7 @@ use std::fmt::{Debug, Formatter};
 
 
 pub trait Entity {
-    fn tick(&mut self) -> Option<TickError>;
+    fn tick(&mut self) -> Result<(), TickError>;
     fn get_name(&self) -> &str;
 }
 

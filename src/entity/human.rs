@@ -82,10 +82,9 @@ impl Healther for Human {
 }
 
 impl Entity for Human {
-    fn tick(&mut self) -> Option<TickError> {
+    fn tick(&mut self) -> Result<(), TickError> {
         println!("{} - ticked", self);
-
-        None
+        Ok(())
     }
 
     fn get_name(&self) -> &str {

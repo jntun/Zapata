@@ -4,7 +4,6 @@ use std::rc::Rc;
 use crate::entity::Entity;
 use crate::error::TickError;
 
-
 const DEFAULT_NAME: &str = "Zapata";
 
 pub struct World {
@@ -35,16 +34,19 @@ impl World {
 }
 
 impl Entity for World {
-    fn tick(&mut self) -> Option<TickError> {
+    fn tick(&mut self) -> Result<(), TickError> {
         for entity in self.entities.iter() {
             match entity.try_borrow_mut() {
                 Ok(mut e) => {
-                    e.tick();
+                    match e.tick() {
+                        Ok(()) => continue,
+                        Err(e) => return Err(TickError::from(e)),
+                    }
                 },
-                Err(e) => return Some(TickError::new(format!("world.tick(): failed to borrow entity - {}", e).as_str())),
+                Err(e) => return Err(TickError::new(format!("world.tick(): failed to borrow entity - {}", e).as_str())),
             }
         }
-        None
+        Ok(())
     }
 
     fn get_name(&self) -> &str {
