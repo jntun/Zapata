@@ -11,6 +11,7 @@ use entity::human::Human;
 use entity::health::*;
 use crate::entity::Entity;
 
+const EPOCH_COUNT: usize = 1000;
 
 fn main() {
     let p1 = Human::new(100, None, Some(String::from("player 1")), None);
@@ -20,5 +21,7 @@ fn main() {
     world.add_entity(Rc::new(RefCell::new(Box::new(p2))));
 
     println!("{:?}\n{}", world, "-".repeat(50));
-    world.tick();
+    for i in 0..EPOCH_COUNT {
+        world.tick();
+    }
 }
