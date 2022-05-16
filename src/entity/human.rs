@@ -9,6 +9,7 @@ const DEFAULT_HEALTH: u64 = 100;
 const DEFAULT_MASS:   f64 = 20.0;
 const DEFAULT_NAME:  &str = "default player";
 
+#[derive(Clone)]
 #[allow(dead_code)]
 pub struct Human {
     name:   String,
