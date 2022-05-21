@@ -59,6 +59,25 @@ impl Div<f64> for Vec3 {
     }
 }
 
+impl Add<Vec3> for Vec3 {
+    type Output = Self;
+
+    fn add(self, rhs: Vec3) -> Self::Output {
+        Self(self.x() + rhs.x(),
+             self.y() + rhs.y(),
+             self.z() + rhs.z(),
+        )
+    }
+}
+
+impl AddAssign<Vec3> for Vec3 {
+    fn add_assign(&mut self, rhs: Vec3) {
+        self.0 += rhs.x();
+        self.1 += rhs.y();
+        self.2 += rhs.z();
+    }
+}
+
 impl Default for Vec3 {
     fn default() -> Self {
         Self(0.0, 0.0, 0.0)
