@@ -48,7 +48,7 @@ impl World {
         for entity in self.entities.iter() {
             match entity.try_borrow_mut() {
                 Ok(mut e) => {
-                    match e.tick() {
+                    match e.tick(self) {
                         Ok(()) => continue,
                         Err(e) => return Err(TickError::from(e)),
                     }

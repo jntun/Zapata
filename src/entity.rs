@@ -1,12 +1,13 @@
 pub(crate) mod human;
 pub(crate) mod health;
 
+use crate::World;
 use crate::error::TickError;
 use std::fmt::{Debug, Formatter};
 
 
 pub trait Entity {
-    fn tick(&mut self) -> Result<(), TickError>;
+    fn tick(&mut self, world: &World) -> Result<(), TickError>;
     fn get_name(&self) -> &str;
 }
 

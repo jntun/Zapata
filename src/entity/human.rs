@@ -1,4 +1,5 @@
-use crate::physics::{PhysicsEntity, PhysxStats, vec3::Vec3};
+use crate::World;
+use crate::physics::{PhysicsEntity, PhysxData, vec3::Vec3};
 use super::Entity;
 use super::health::{Healther, Attacker, HealthStat, Health, Damage};
 use super::TickError;
@@ -82,8 +83,7 @@ impl Healther for Human {
 }
 
 impl Entity for Human {
-    fn tick(&mut self) -> Result<(), TickError> {
-        println!("{} - ticked", self);
+    fn tick(&mut self, _world: &World) -> Result<(), TickError> {
         Ok(())
     }
 
