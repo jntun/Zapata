@@ -15,7 +15,7 @@ const DEFAULT_NAME:  &str = "default player";
 pub struct Human {
     name:   String,
     health: HealthStat,
-    physx:  PhysxStats
+    physx: PhysxData
 }
 
 impl Human {
@@ -24,12 +24,12 @@ impl Human {
             Some(name) => Self {
                 name,
                 health: HealthStat::new(max_health, start_health),
-                physx: PhysxStats::new(DEFAULT_MASS, position),
+                physx: PhysxData::new(DEFAULT_MASS, position),
             },
             None => Self {
                 name: String::from(DEFAULT_NAME),
                 health: HealthStat::new(max_health, start_health),
-                physx: PhysxStats::new(DEFAULT_MASS, position),
+                physx: PhysxData::new(DEFAULT_MASS, position),
             }
         }
     }
@@ -103,7 +103,7 @@ impl Debug for Human {
         f.debug_struct(self.get_name())
             .field("health", &self.get_current())
             .field("max_health", &self.get_max())
-            .field("physx", &self.physx)
+            .field("physx", self.get_physx_data())
             .finish()
     }
 }
@@ -114,7 +114,7 @@ impl Default for Human {
         Self {
             name: String::from(DEFAULT_NAME),
             health: HealthStat::new(DEFAULT_HEALTH, None),
-            physx: PhysxStats::default(),
+            physx: PhysxData::default(),
         }
     }
 }
