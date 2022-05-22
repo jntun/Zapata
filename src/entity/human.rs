@@ -36,20 +36,12 @@ impl Human {
 }
 
 impl PhysicsEntity for Human {
-    fn apply_force(&mut self, force: Vec3) {
-        self.physx.momentum *= force
+    fn get_physx_data(&self) -> &PhysxData {
+        &self.physx
     }
 
-    fn get_mass(&self) -> f64 {
-        self.physx.mass
-    }
-
-    fn get_momentum(&self) -> Vec3 {
-        self.physx.momentum
-    }
-
-    fn get_pos(&self) -> Vec3 {
-        self.physx.position
+    fn mut_physx_data(&mut self) -> &mut PhysxData {
+        &mut self.physx
     }
 }
 
