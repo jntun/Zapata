@@ -5,6 +5,7 @@ use std::cell::RefCell;
 use std::rc::Rc;
 use crate::entity::Entity;
 use crate::error::TickError;
+use crate::physics::effect::Effect;
 use crate::physics::vec3::Vec3;
 
 const DEFAULT_NAME: &str = "Zapata";
@@ -31,6 +32,7 @@ impl World {
 
     pub fn add_entity(&mut self, e: tracked::Entity) {
         match e {
+            tracked::Entity::Default(entity) => self.entities.push(Rc::new(RefCell::new(tracked::Entity::Default(entity)))),
             tracked::Entity::Physics(mut physx_entity) => {
                 physx_entity.mut_physx_data().add_effect(Effect::new(String::from("Gravity"), Vec3::new(0.0, 9.82, 0.0), None));
                 self.entities.push(Rc::new(RefCell::new(tracked::Entity::Physics(physx_entity))));

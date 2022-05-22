@@ -1,8 +1,10 @@
 pub(crate) mod vec3;
+pub(crate) mod effect;
 
 use std::fmt::{Display, Debug, Formatter};
 use crate::entity::Entity;
 use self::vec3::Vec3;
+use effect::Effect;
 
 pub trait PhysicsEntity: Entity {
     fn get_physx_data(&self) -> &PhysxData;
@@ -14,6 +16,7 @@ pub struct PhysxData {
     mass:     f64,
     momentum: Vec3,
     position: Vec3,
+    effects:  Vec<Effect>,
 }
 
 impl PhysxData {
@@ -23,13 +26,19 @@ impl PhysxData {
                 mass,
                 momentum: Vec3::new(0.0, 0.0, 0.0),
                 position,
+                effects: Vec::new(),
             },
             None => Self {
                 mass,
                 momentum: Vec3::new(0.0, 0.0, 0.0),
                 position: Vec3::new(0.0, 0.0, 0.0),
+                effects: Vec::new(),
             }
         }
+    }
+
+    pub fn add_effect(&mut self, effect: Effect) {
+        self.effects.push(effect);
     }
 }
 
@@ -39,6 +48,7 @@ impl Default for PhysxData {
             mass: 0.0,
             momentum: Vec3::default(),
             position: Vec3::default(),
+            effects: Vec::new(),
         }
     }
 }
