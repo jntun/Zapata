@@ -1,14 +1,17 @@
+pub(crate) mod tracked;
+
 use std::fmt::{Debug, Formatter};
 use std::cell::RefCell;
 use std::rc::Rc;
 use crate::entity::Entity;
 use crate::error::TickError;
+use crate::physics::vec3::Vec3;
 
 const DEFAULT_NAME: &str = "Zapata";
 
 pub struct World {
     name: String,
-    entities: Vec<Rc<RefCell<Box<dyn Entity>>>>,
+    entities: Vec<Rc<RefCell<tracked::Entity>>>,
 }
 
 impl World {
@@ -26,15 +29,22 @@ impl World {
         }
     }
 
-    pub fn add_entity(&mut self, e: Rc<RefCell<Box<dyn Entity>>>) {
-        self.entities.push(e.clone());
+    pub fn add_entity(&mut self, e: tracked::Entity) {
+        match e {
+            tracked::Entity::Physics(mut physx_entity) => {
+                physx_entity.mut_physx_data().add_effect(Effect::new(String::from("Gravity"), Vec3::new(0.0, 9.82, 0.0), None));
+                self.entities.push(Rc::new(RefCell::new(tracked::Entity::Physics(physx_entity))));
+            }
+        };
     }
-
-
 }
 
-impl Entity for World {
-    fn tick(&mut self) -> Result<(), TickError> {
+impl World {
+    fn pre_tick(&mut self) -> Result<(), TickError> {
+        Ok(())
+    }
+
+    fn tick_entities(&mut self) -> Result<(), TickError> {
         for entity in self.entities.iter() {
             match entity.try_borrow_mut() {
                 Ok(mut e) => {
@@ -47,6 +57,18 @@ impl Entity for World {
             }
         }
         Ok(())
+    }
+
+    fn post_tick(&mut self) -> Result<(), TickError> {
+        Ok(())
+    }
+
+    pub fn tick(&mut self) -> Result<(), TickError> {
+        if let Err(e) = self.tick_entities() {
+            return Err(e);
+        } else {
+            Ok(())
+        }
     }
 
     fn get_name(&self) -> &str {
