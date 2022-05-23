@@ -106,7 +106,7 @@ impl Default for Human {
         Self {
             name: String::from(DEFAULT_NAME),
             health: HealthStat::new(DEFAULT_HEALTH, None),
-            physx: PhysxData::default(),
+            physx: PhysxData::new(DEFAULT_MASS, None),
         }
     }
 }
