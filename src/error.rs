@@ -1,6 +1,19 @@
 use std::error::Error;
 use std::fmt;
 use std::fmt::Formatter;
+use std::process::{ExitCode, Termination};
+
+#[repr(u8)]
+pub enum ZapataResult {
+    Success = 0,
+    TickError = 1,
+}
+
+impl Termination for ZapataResult {
+    fn report(self) -> ExitCode {
+        ExitCode::from(self as u8)
+    }
+}
 
 #[derive(Debug)]
 pub struct GenericError {
