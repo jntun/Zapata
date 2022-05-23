@@ -40,6 +40,21 @@ impl PhysxData {
     pub fn add_effect(&mut self, effect: Effect) {
         self.effects.push(effect);
     }
+
+    pub fn get_effects_force_sum(&self) -> Vec3 {
+        let mut total = Vec3::default();
+        for effect in self.effects.iter() {
+            total += effect.get_force();
+        }
+        total
+    }
+
+    pub fn apply_force(&mut self, force: Vec3) {
+        self.momentum += force
+    }
+    pub fn update_position(&mut self) {
+        self.position += self.momentum / self.mass
+    }
 }
 
 impl Default for PhysxData {
