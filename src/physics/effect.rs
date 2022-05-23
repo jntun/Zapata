@@ -17,9 +17,7 @@ pub struct Effect {
 }
 
 impl Effect {
-    pub fn apply_force(&self, mut target: impl PhysicsEntity) {
-        target.mut_physx_data().momentum+=self.force;
-    }
+    pub fn get_force(&self) -> Vec3 { self.force }
 
     pub fn is_alive(&self, current_tick: u64) -> bool {
         match self.duration {
