@@ -7,11 +7,12 @@ use std::process::exit;
 use world::World;
 use entity::human::Human;
 
-const EPOCH_COUNT: usize = 10;
+const EPOCH_COUNT: usize = 100;
+const HUMAN_COUNT: usize = 10;
 
 fn main() {
     let ref mut world = World::new(None);
-    let humans: Vec<_> = (0..EPOCH_COUNT).into_iter().map(|_| world::tracked::Entity::Physics(Box::new(Human::default()))).collect();
+    let humans: Vec<_> = (0..HUMAN_COUNT).into_iter().map(|_| world::tracked::Entity::Physics(Box::new(Human::default()))).collect();
 
     for human in humans.into_iter() {
         world.add_entity(human);
