@@ -34,10 +34,14 @@ impl World {
         match e {
             tracked::Entity::Default(entity) => self.entities.push(Rc::new(RefCell::new(tracked::Entity::Default(entity)))),
             tracked::Entity::Physics(mut physx_entity) => {
-                physx_entity.mut_physx_data().add_effect(Effect::new(String::from("Gravity"), Vec3::new(0.0, 9.82, 0.0), None));
+                physx_entity.mut_physx_data().add_effect(self.get_gravity());
                 self.entities.push(Rc::new(RefCell::new(tracked::Entity::Physics(physx_entity))));
             }
         };
+    }
+
+    pub fn get_gravity(&self) -> Effect {
+        Effect::new(String::from("Gravity"), Vec3::new(0.0, 1.0, 0.0), None)
     }
 }
 
