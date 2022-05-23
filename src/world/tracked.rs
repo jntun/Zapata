@@ -3,7 +3,6 @@ use std::{
     rc::Rc,
     cell::RefCell,
 };
-use std::ops::Deref;
 use crate::{
     entity,
     error::TickError,
@@ -21,6 +20,10 @@ impl entity::Entity for Entity {
         match self {
             Entity::Default(e) => e.tick(world),
             Entity::Physics(e) => {
+                let force = e.get_physx_data().get_effects_force_sum();
+                e.mut_physx_data().apply_force(force);
+                e.mut_physx_data().update_position();
+                println!("{:?}\n", e.get_physx_data());
                 e.tick(world)
             },
         }
