@@ -60,7 +60,7 @@ impl PhysxData {
 impl Default for PhysxData {
     fn default() -> Self {
         Self {
-            mass: 0.0,
+            mass: 1.0,
             momentum: Vec3::default(),
             position: Vec3::default(),
             effects: Vec::new(),
