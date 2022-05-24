@@ -1,10 +1,12 @@
 pub(crate) mod vec3;
 pub(crate) mod effect;
 
-use std::fmt::{Display, Debug, Formatter};
-use crate::entity::Entity;
-use self::vec3::Vec3;
-use effect::Effect;
+use {
+    std::fmt::{Display, Debug, Formatter},
+    crate::entity::Entity,
+    self::vec3::Vec3,
+    effect::Effect,
+};
 
 pub trait PhysicsEntity: Entity {
     fn get_physx_data(&self) -> &PhysxData;

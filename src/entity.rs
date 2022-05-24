@@ -1,9 +1,14 @@
 pub(crate) mod human;
 pub(crate) mod health;
 
-use crate::World;
-use crate::error::TickError;
-use std::fmt::{Debug, Formatter};
+use {
+    std::fmt::{Debug, Formatter},
+    crate::{
+        World,
+        error::TickError,
+    }
+};
+
 
 
 pub trait Entity {

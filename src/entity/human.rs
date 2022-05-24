@@ -1,10 +1,17 @@
-use crate::World;
-use crate::physics::{PhysicsEntity, PhysxData, vec3::Vec3};
-use super::Entity;
-use super::health::{Healther, Attacker, HealthStat, Health, Damage};
-use super::TickError;
-use std::fmt::Formatter;
-use std::fmt::{Debug, Display};
+use {
+    std::{
+        fmt::{Formatter, Debug, Display},
+    },
+    super::{
+        Entity,
+        health::{Healther, Attacker, HealthStat, Health, Damage},
+    },
+    crate::{
+        World,
+        physics::{PhysicsEntity, PhysxData, vec3::Vec3},
+        error::TickError,
+    },
+};
 
 const DEFAULT_HEALTH: u64 = 100;
 const DEFAULT_MASS:   f64 = 20.0;
@@ -15,7 +22,7 @@ const DEFAULT_NAME:  &str = "default player";
 pub struct Human {
     name:   String,
     health: HealthStat,
-    physx: PhysxData
+    physx:  PhysxData,
 }
 
 impl Human {
@@ -99,7 +106,6 @@ impl Debug for Human {
             .finish()
     }
 }
-
 
 impl Default for Human {
     fn default() -> Self {

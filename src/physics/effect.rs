@@ -1,12 +1,14 @@
-use std::cell::RefCell;
-use std::fmt::{Debug, Formatter};
-use std::rc::Rc;
-use crate::entity::Entity;
-use crate::error::TickError;
-use crate::physics::{
-    PhysicsEntity,
-    vec3::Vec3,
+use {
+    std::fmt::{Debug, Formatter},
+    crate::{
+        entity::Entity,
+        error::TickError,
+        physics::{
+            vec3::Vec3,
+        },
+    }
 };
+
 use crate::world::World;
 
 #[derive(Debug, Clone)]

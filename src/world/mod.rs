@@ -1,13 +1,17 @@
 pub(crate) mod tracked;
 
-use std::fmt::{Debug, Formatter};
-use std::cell::RefCell;
-use std::rc::Rc;
-use std::time;
-use crate::entity::Entity;
-use crate::error::TickError;
-use crate::physics::effect::Effect;
-use crate::physics::vec3::Vec3;
+use std::{
+    fmt::{Debug, Formatter},
+    cell::RefCell,
+    rc::Rc,
+    time,
+};
+use crate::{
+    entity::Entity,
+    error::TickError,
+    physics::effect::Effect,
+    physics::vec3::Vec3,
+};
 
 const DEFAULT_NAME: &str = "Zapata";
 

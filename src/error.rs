@@ -1,7 +1,9 @@
-use std::error::Error;
-use std::fmt;
-use std::fmt::Formatter;
-use std::process::{ExitCode, Termination};
+use std::{
+    error::Error,
+    fmt,
+    fmt::Formatter,
+    process::{ExitCode, Termination},
+};
 
 #[repr(u8)]
 pub enum ZapataResult {
