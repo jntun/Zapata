@@ -41,7 +41,7 @@ impl World {
     }
 
     pub fn get_gravity(&self) -> Effect {
-        Effect::new(String::from("Gravity"), Vec3::new(0.0, 1.0, 0.0), None)
+        Effect::new(String::from("Gravity"), Vec3::new(0.0, 9.821, 0.0), None)
     }
 }
 
