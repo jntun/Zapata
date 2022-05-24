@@ -109,7 +109,7 @@ impl Debug for World {
         f.debug_struct(self.get_name())
             .field("ticks", &self.ticks)
             .field("avg_tick", &self.average_tick())
-            .field("entities", &self.entities)
+            .field("entities", &self.entities.len())
             .finish()
     }
 }
