@@ -9,19 +9,19 @@ use {
 };
 
 pub trait PhysicsEntity: Entity {
-    fn get_physx_data(&self) -> &PhysxData;
-    fn mut_physx_data(&mut self) -> &mut PhysxData;
+    fn get_physx_data(&self) -> &PhysxComponent;
+    fn mut_physx_data(&mut self) -> &mut PhysxComponent;
 }
 
 #[derive(Clone)]
-pub struct PhysxData {
+pub struct PhysxComponent {
     mass:     f64,
     momentum: Vec3,
     position: Vec3,
     effects:  Vec<Effect>,
 }
 
-impl PhysxData {
+impl PhysxComponent {
     pub fn new(mass: f64, position: Option<Vec3>) -> Self {
         match position {
             Some(position) => Self {
@@ -59,7 +59,7 @@ impl PhysxData {
     }
 }
 
-impl Default for PhysxData {
+impl Default for PhysxComponent {
     fn default() -> Self {
         Self {
             mass: 1.0,
@@ -70,7 +70,7 @@ impl Default for PhysxData {
     }
 }
 
-impl Debug for PhysxData {
+impl Debug for PhysxComponent {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("data")
             .field("mass", &self.mass)

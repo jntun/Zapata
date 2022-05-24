@@ -8,7 +8,7 @@ use {
     },
     crate::{
         World,
-        physics::{PhysicsEntity, PhysxData, vec3::Vec3},
+        physics::{PhysicsEntity, PhysxComponent, vec3::Vec3},
         error::TickError,
     },
 };
@@ -22,7 +22,7 @@ const DEFAULT_NAME:  &str = "default player";
 pub struct Human {
     name:   String,
     health: HealthStat,
-    physx:  PhysxData,
+    physx: PhysxComponent,
 }
 
 impl Human {
@@ -31,23 +31,23 @@ impl Human {
             Some(name) => Self {
                 name,
                 health: HealthStat::new(max_health, start_health),
-                physx: PhysxData::new(DEFAULT_MASS, position),
+                physx: PhysxComponent::new(DEFAULT_MASS, position),
             },
             None => Self {
                 name: String::from(DEFAULT_NAME),
                 health: HealthStat::new(max_health, start_health),
-                physx: PhysxData::new(DEFAULT_MASS, position),
+                physx: PhysxComponent::new(DEFAULT_MASS, position),
             }
         }
     }
 }
 
 impl PhysicsEntity for Human {
-    fn get_physx_data(&self) -> &PhysxData {
+    fn get_physx_data(&self) -> &PhysxComponent {
         &self.physx
     }
 
-    fn mut_physx_data(&mut self) -> &mut PhysxData {
+    fn mut_physx_data(&mut self) -> &mut PhysxComponent {
         &mut self.physx
     }
 }
@@ -112,7 +112,7 @@ impl Default for Human {
         Self {
             name: String::from(DEFAULT_NAME),
             health: HealthStat::new(DEFAULT_HEALTH, None),
-            physx: PhysxData::new(DEFAULT_MASS, None),
+            physx: PhysxComponent::new(DEFAULT_MASS, None),
         }
     }
 }
