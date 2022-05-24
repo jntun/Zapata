@@ -3,6 +3,7 @@ pub(crate) mod tracked;
 use std::fmt::{Debug, Formatter};
 use std::cell::RefCell;
 use std::rc::Rc;
+use std::time;
 use crate::entity::Entity;
 use crate::error::TickError;
 use crate::physics::effect::Effect;
@@ -12,6 +13,7 @@ const DEFAULT_NAME: &str = "Zapata";
 
 pub struct World {
     name:            String,
+    total_tick_time: time::Duration,
     ticks:           u64,
     entities:        Vec<Rc<RefCell<tracked::Entity>>>,
 }
@@ -22,11 +24,13 @@ impl World {
         match name {
             Some(name) => Self {
                 name,
+                total_tick_time: time::Duration::from_millis(0),
                 ticks: 0,
                 entities,
             },
             None => Self {
                 name: String::from(DEFAULT_NAME),
+                total_tick_time: time::Duration::from_millis(0),
                 ticks: 0,
                 entities,
             }
@@ -73,11 +77,21 @@ impl World {
     }
 
     pub fn tick(&mut self) -> Result<(), TickError> {
+        let start = time::SystemTime::now();
         if let Err(e) = self.tick_entities() {
             return Err(e);
         } else {
             self.ticks += 1;
         }
+        let end = time::SystemTime::now();
+
+       match end.duration_since(start) {
+           Ok(dur) => self.total_tick_time += dur,
+           Err(e) => return Err(TickError::new(e.to_string().as_str())),
+       }
+
+        println!("total: {:?}", self.total_tick_time);
+
         Ok(())
     }
 
@@ -89,6 +103,7 @@ impl World {
 impl Debug for World {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         f.debug_struct(self.get_name())
+            .field("ticks", &self.ticks)
             .field("entities", &self.entities)
             .finish()
     }
