@@ -95,6 +95,10 @@ impl World {
         Ok(())
     }
 
+    pub fn average_tick(&self) -> time::Duration {
+        self.total_tick_time.div_f64(self.ticks as f64)
+    }
+
     fn get_name(&self) -> &str {
         self.name.as_str()
     }
@@ -104,6 +108,7 @@ impl Debug for World {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         f.debug_struct(self.get_name())
             .field("ticks", &self.ticks)
+            .field("avg_tick", &self.average_tick())
             .field("entities", &self.entities)
             .finish()
     }
