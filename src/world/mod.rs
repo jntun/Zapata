@@ -11,8 +11,9 @@ use crate::physics::vec3::Vec3;
 const DEFAULT_NAME: &str = "Zapata";
 
 pub struct World {
-    name: String,
-    entities: Vec<Rc<RefCell<tracked::Entity>>>,
+    name:            String,
+    ticks:           u64,
+    entities:        Vec<Rc<RefCell<tracked::Entity>>>,
 }
 
 impl World {
@@ -21,10 +22,12 @@ impl World {
         match name {
             Some(name) => Self {
                 name,
+                ticks: 0,
                 entities,
             },
             None => Self {
                 name: String::from(DEFAULT_NAME),
+                ticks: 0,
                 entities,
             }
         }
@@ -73,8 +76,9 @@ impl World {
         if let Err(e) = self.tick_entities() {
             return Err(e);
         } else {
-            Ok(())
+            self.ticks += 1;
         }
+        Ok(())
     }
 
     fn get_name(&self) -> &str {
