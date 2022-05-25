@@ -1,6 +1,5 @@
 use std::{
-    error::Error,
-    fmt,
+    io::Error,
     fmt::Formatter,
     process::{ExitCode, Termination},
 };
@@ -18,29 +17,13 @@ impl Termination for ZapataResult {
 }
 
 #[derive(Debug)]
-pub struct GenericError {
-    details: String,
+pub enum ZapataError {
+    RuntimeError(Error),
+    FatalError(Error),
 }
 
-impl GenericError {
-    pub fn new(msg: &str) -> Self {
-        Self {
-            details: msg.to_string(),
-        }
+impl From<Error> for ZapataError {
+    fn from(e: Error) -> Self {
+        ZapataError::RuntimeError(e)
     }
 }
-
-impl fmt::Display for GenericError {
-    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", self.details)
-    }
-}
-
-impl Error for GenericError {
-    fn description(&self) -> &str {
-        &self.details
-    }
-}
-
-pub type MaxEntitiesError = GenericError;
-pub type TickError = GenericError;
