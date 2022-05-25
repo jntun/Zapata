@@ -2,14 +2,11 @@ use {
     std::fmt::{Debug, Formatter},
     crate::{
         entity::Entity,
-        error::TickError,
         physics::{
             vec3::Vec3,
         },
     }
 };
-
-use crate::world::World;
 
 #[derive(Debug, Clone)]
 pub struct Effect {
@@ -42,16 +39,6 @@ impl Effect {
                 duration: Duration::Indefinite,
             }
         }
-    }
-}
-
-impl Entity for Effect {
-    fn tick(&mut self, world: &World) -> Result<(), TickError> {
-        Ok(())
-    }
-
-    fn get_name(&self) -> &str {
-        self.name.as_str()
     }
 }
 
