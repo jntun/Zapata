@@ -19,11 +19,9 @@ fn main() -> error::ZapataResult {
         world.add_entity(human);
     }
 
-    println!("Running {}x...\n\t{:?}\n", EPOCH_COUNT, world);
-
     for i in 0..EPOCH_COUNT {
         match world.tick() {
-            Ok(()) => println!("tick {}", i),
+            Ok(()) => (),
             Err(e) => {
                 eprintln!("Couldn't tick world: {}", e);
                 return self::error::ZapataResult::TickError
@@ -31,6 +29,7 @@ fn main() -> error::ZapataResult {
         }
     }
 
-    println!("\nDone:\n\t{:?}", world);
+    print!("\nDone - Ran for {} ticks:\n\t", EPOCH_COUNT);
+    println!("{:?}", world);
     self::error::ZapataResult::Success
 }
