@@ -1,59 +1,79 @@
-use super::Entity;
+use {
+    std::rc::Rc,
+    crate::{
+        entity::{Component, Entity},
+        error::ZapataError,
+        scene::Scene,
+    }
+};
 
-pub(crate) type Health = u64;
-pub(crate) type Damage = u64;
+pub(crate) type HealthUnit = i64;
+pub(crate) type DamageUnit = i64;
 
-pub trait Healther: Entity {
-    fn do_damage(&mut self, dmg: Damage);
-    fn set_max(&mut self, health: Health);
-    fn get_current(&self) -> Health;
-    fn get_max(&self) -> Health;
+const COMPONENT_NAME: &str = "Health";
+
+struct Damage {
+    source: Entity,
+    dest:   Entity,
+    cause: Rc<dyn Component>,
 }
 
-pub trait Attacker: Entity {
-    fn attack<T: Healther>(&mut self, target: &mut T);
-    fn get_damage(&self) -> Damage;
+struct Health {
+    start:   HealthUnit,
+    current: HealthUnit,
+    max:     HealthUnit,
 }
 
-#[derive(Debug, Clone, Copy)]
-pub struct HealthStat {
-    pub current: Health,
-    pub max: Health,
-}
 
-impl HealthStat {
-    pub fn new(max: Health, start: Option<Health>) -> Self {
-      match start {
-          Some(current) => Self {current, max},
-          None => Self {current: max, max},
-      }
+impl Component for Health {
+    fn update(&mut self, entity: Entity, scene: &Scene) -> Result<(), ZapataError> {
+        Ok(())
+    }
+
+    fn is_active(&self) -> bool {
+        true
+    }
+
+    fn get_name(&self) -> &str {
+        COMPONENT_NAME
     }
 }
 
+impl Health {
+    pub fn new(max: HealthUnit, start: Option<HealthUnit>) -> Self {
+      match start {
+          Some(start) => Self {start, current: start, max},
+          None => Self {start: max, current: max, max},
+      }
+    }
 
-impl std::ops::Add<Health> for HealthStat {
-    type Output = Health;
+}
 
-    fn add(self, rhs: Health) -> Health {
+
+impl std::ops::Add<HealthUnit> for Health {
+    type Output = HealthUnit;
+
+    fn add(self, rhs: HealthUnit) -> HealthUnit {
         self.current + rhs
     }
 }
 
-impl std::ops::AddAssign<Health> for HealthStat {
-    fn add_assign(&mut self, rhs: Health) {
+impl std::ops::AddAssign<HealthUnit> for Health {
+    fn add_assign(&mut self, rhs: HealthUnit) {
         self.current += rhs;
     }
 }
 
-impl std::ops::SubAssign<Health> for HealthStat {
-    fn sub_assign(&mut self, rhs: Health) {
+impl std::ops::SubAssign<HealthUnit> for Health {
+    fn sub_assign(&mut self, rhs: HealthUnit) {
         self.current -= rhs;
     }
 }
 
-impl Default for HealthStat {
+impl Default for Health {
     fn default() -> Self {
         Self {
+            start: 100,
             current: 100,
             max: 100,
         }
