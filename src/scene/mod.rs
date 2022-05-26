@@ -1,86 +1,77 @@
 use std::{
+    collections::HashMap,
     fmt::{Debug, Formatter},
     cell::RefCell,
     rc::Rc,
     time,
 };
 use crate::{
-    entity::Entity,
-    error::TickError,
-    physics::effect::Effect,
-    physics::vec3::Vec3,
+    entity::{
+        Component,
+        Entity,
+    },
+    error::{
+        ZapataError,
+    },
+    physics::{
+        effect::Effect,
+        vec3::Vec3,
+    },
 };
 
 const DEFAULT_NAME: &str = "Zapata";
 
-pub struct World {
+pub struct Scene {
     name:            String,
     total_tick_time: time::Duration,
     ticks:           u64,
-    entities:        Vec<Rc<RefCell<tracked::Entity>>>,
+    ids:             u64,
+    entities:        HashMap<Entity, Vec<Rc<RefCell<Box<dyn Component>>>>>,
 }
 
-impl World {
-    pub fn new(name: Option<String>) -> Self {
-        let entities = Vec::new();
-        match name {
-            Some(name) => Self {
-                name,
-                total_tick_time: time::Duration::from_millis(0),
-                ticks: 0,
-                entities,
-            },
-            None => Self {
-                name: String::from(DEFAULT_NAME),
-                total_tick_time: time::Duration::from_millis(0),
-                ticks: 0,
-                entities,
-            }
-        }
+
+impl Scene {
+    pub fn add_entity(&mut self, components: Vec<Box<dyn Component>>) -> Result<Entity, ZapataError> {
+        let entity = self.new_entity();
+        let comp_list = components.into_iter().map(|c| Rc::new(RefCell::new(c))).collect();
+        self.entities.insert(entity.clone(), comp_list);
+        Ok(entity)
     }
 
-    pub fn add_entity(&mut self, e: tracked::Entity) {
-        match e {
-            tracked::Entity::Default(entity) => self.entities.push(Rc::new(RefCell::new(tracked::Entity::Default(entity)))),
-            tracked::Entity::Physics(mut physx_entity) => {
-                physx_entity.mut_physx_data().add_effect(self.get_gravity());
-                self.entities.push(Rc::new(RefCell::new(tracked::Entity::Physics(physx_entity))));
-            }
-        };
+    fn new_entity(&mut self) -> Entity {
+        let e = self.ids;
+        self.ids += 1;
+        Entity::new(e)
     }
 
-    pub fn get_gravity(&self) -> Effect {
-        Effect::new(String::from("Gravity"), Vec3::new(0.0, 9.821, 0.0), None)
-    }
-}
-
-impl World {
-    fn pre_tick(&mut self) -> Result<(), TickError> {
+    fn pre_update(&mut self) -> Result<(), ZapataError> {
         Ok(())
     }
 
-    fn tick_entities(&mut self) -> Result<(), TickError> {
-        for entity in self.entities.iter() {
-            match entity.try_borrow_mut() {
-                Ok(mut e) => {
-                    match e.tick(self) {
-                        Ok(()) => continue,
-                        Err(e) => return Err(TickError::from(e)),
-                    }
-                },
-                Err(e) => return Err(TickError::new(format!("world.tick(): failed to borrow entity - {}", e).as_str())),
+    fn update_entities(&mut self) -> Result<(), ZapataError> {
+        for (entity, comp_list) in self.entities.iter() {
+            for comp in comp_list.iter() {
+                match comp.try_borrow_mut() {
+                    Ok(mut comp) => {
+                        match comp.update(entity.clone(), self) {
+                            Ok(()) => (),
+                            Err(e) => return Err(e),
+                        }
+                    },
+                    Err(e) => return Err(ZapataError::from(e)),
+                }
             }
         }
         Ok(())
     }
 
-    fn post_tick(&mut self) -> Result<(), TickError> {
+    fn post_update(&mut self) -> Result<(), ZapataError> {
         Ok(())
     }
 
-    pub fn tick(&mut self) -> Result<(), TickError> {
+    pub fn tick(&mut self) -> Result<(), ZapataError> {
         let start = time::SystemTime::now();
-        if let Err(e) = self.tick_entities() {
+        if let Err(e) = self.update_entities() {
             return Err(e);
         } else {
             self.ticks += 1;
@@ -89,7 +80,7 @@ impl World {
 
        match end.duration_since(start) {
            Ok(dur) => self.total_tick_time += dur,
-           Err(e) => return Err(TickError::new(e.to_string().as_str())),
+           Err(e) => return Err(ZapataError::from(e)),
        }
 
         println!("total: {:?}", self.total_tick_time);
@@ -97,8 +88,41 @@ impl World {
         Ok(())
     }
 
-    pub fn average_tick(&self) -> time::Duration {
-        self.total_tick_time.div_f64(self.ticks as f64)
+
+
+
+}
+
+impl Scene {
+    pub fn new(name: Option<String>) -> Self {
+        let entities = HashMap::new();
+        match name {
+            Some(name) => Self {
+                name,
+                total_tick_time: time::Duration::from_millis(0),
+                ticks: 0,
+                ids: 0,
+                entities,
+            },
+            None => Self {
+                name: String::from(DEFAULT_NAME),
+                total_tick_time: time::Duration::from_millis(0),
+                ticks: 0,
+                ids: 0,
+                entities,
+            }
+        }
+    }
+
+    pub fn get_gravity(&self) -> Effect {
+        Effect::new(String::from("Gravity"), Vec3::new(0.0, -9.821, 0.0), None)
+    }
+
+    pub fn average_tick(&self) -> Option<time::Duration> {
+        if self.ticks == 0 || self.total_tick_time.is_zero() {
+            return None
+        }
+        Some(self.total_tick_time.div_f64(self.ticks as f64))
     }
 
     fn get_name(&self) -> &str {
@@ -106,7 +130,7 @@ impl World {
     }
 }
 
-impl Debug for World {
+impl Debug for Scene {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         f.debug_struct(self.get_name())
             .field("ticks", &self.ticks)

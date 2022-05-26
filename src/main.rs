@@ -1,10 +1,9 @@
-mod world;
+mod scene;
 mod entity;
 mod error;
 mod physics;
 
-use world::World;
-use entity::human::Human;
+use scene::Scene;
 
 const EPOCH_COUNT: usize = 100;
 const HUMAN_COUNT: usize = 10;
@@ -12,24 +11,9 @@ const HUMAN_COUNT: usize = 10;
 
 
 fn main() -> error::ZapataResult {
-    let ref mut world = World::new(None);
-    let humans: Vec<_> = (0..HUMAN_COUNT).into_iter().map(|_| world::tracked::Entity::Physics(Box::new(Human::default()))).collect();
-
-    for human in humans.into_iter() {
-        world.add_entity(human);
-    }
-
-    for i in 0..EPOCH_COUNT {
-        match world.tick() {
-            Ok(()) => (),
-            Err(e) => {
-                eprintln!("Couldn't tick world: {}", e);
-                return self::error::ZapataResult::TickError
-            },
-        }
-    }
+    let scene = Scene::new(None);
 
     print!("\nDone - Ran for {} ticks:\n\t", EPOCH_COUNT);
-    println!("{:?}", world);
+    println!("{:?}", scene);
     self::error::ZapataResult::Success
 }
