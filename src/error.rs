@@ -1,7 +1,7 @@
 use std::{
-    io::Error,
-    fmt::Formatter,
     process::{ExitCode, Termination},
+    cell::BorrowMutError,
+    time::SystemTimeError,
 };
 
 #[repr(u8)]
@@ -18,12 +18,18 @@ impl Termination for ZapataResult {
 
 #[derive(Debug)]
 pub enum ZapataError {
-    RuntimeError(Error),
-    FatalError(Error),
+    RuntimeError(String),
+    FatalError(String),
 }
 
-impl From<Error> for ZapataError {
-    fn from(e: Error) -> Self {
-        ZapataError::RuntimeError(e)
+impl From<SystemTimeError> for ZapataError {
+    fn from(e: SystemTimeError) -> Self {
+        ZapataError::RuntimeError(e.to_string())
+    }
+}
+
+impl From<BorrowMutError> for ZapataError {
+    fn from(e: BorrowMutError) -> Self {
+        ZapataError::FatalError(e.to_string())
     }
 }
