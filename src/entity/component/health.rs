@@ -8,7 +8,6 @@ use {
 };
 
 pub(crate) type HealthUnit = i64;
-pub(crate) type DamageUnit = i64;
 
 const COMPONENT_NAME: &str = "Health";
 
