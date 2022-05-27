@@ -12,13 +12,13 @@ pub(crate) type DamageUnit = i64;
 
 const COMPONENT_NAME: &str = "Health";
 
-struct Damage {
+pub struct Damage {
     source: Entity,
     dest:   Entity,
     cause: Rc<dyn Component>,
 }
 
-struct Health {
+pub struct Health {
     start:   HealthUnit,
     current: HealthUnit,
     max:     HealthUnit,
