@@ -69,7 +69,7 @@ impl Scene {
         Ok(())
     }
 
-    pub fn tick(&mut self) -> Result<(), ZapataError> {
+    pub fn update(&mut self) -> Result<(), ZapataError> {
         let start = time::SystemTime::now();
         if let Err(e) = self.update_entities() {
             return Err(e);
