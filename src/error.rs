@@ -6,8 +6,18 @@ use std::{
 
 #[repr(u8)]
 pub enum ZapataResult {
-    Success = 0,
-    TickError = 1,
+    Success =  0,
+    Fatal   =  1,
+    Runtime =  2,
+}
+
+impl From<ZapataError> for ZapataResult {
+    fn from(e: ZapataError) -> Self {
+        match e {
+            ZapataError::FatalError(e) => ZapataResult::Fatal,
+            ZapataError::RuntimeError(e) => ZapataResult::Success
+        }
+    }
 }
 
 impl Termination for ZapataResult {
