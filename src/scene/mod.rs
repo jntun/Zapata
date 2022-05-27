@@ -22,11 +22,12 @@ use crate::{
 const DEFAULT_NAME: &str = "Zapata";
 
 pub struct Scene {
-    name:            String,
-    total_tick_time: time::Duration,
-    ticks:           u64,
-    ids:             u64,
-    entities:        HashMap<Entity, Vec<Rc<RefCell<Box<dyn Component>>>>>,
+    name:                  String,
+    total_tick_time:       time::Duration,
+    total_delta_tick_time: time::Duration,
+    ticks:                 u64,
+    ids:                   u64,
+    entities:              HashMap<Entity, Vec<Rc<RefCell<Box<dyn Component>>>>>,
 }
 
 
@@ -84,7 +85,6 @@ impl Scene {
        }
 
         println!("total: {:?}", self.total_tick_time);
-
         Ok(())
     }
 
@@ -96,10 +96,6 @@ impl Scene {
         }
         Ok(())
     }
-
-
-
-
 }
 
 impl Scene {
@@ -108,14 +104,16 @@ impl Scene {
         match name {
             Some(name) => Self {
                 name,
-                total_tick_time: time::Duration::from_millis(0),
+                total_tick_time: time::Duration::default(),
+                total_delta_tick_time: time::Duration::default(),
                 ticks: 0,
                 ids: 0,
                 entities,
             },
             None => Self {
                 name: String::from(DEFAULT_NAME),
-                total_tick_time: time::Duration::from_millis(0),
+                total_tick_time: time::Duration::default(),
+                total_delta_tick_time: time::Duration::default(),
                 ticks: 0,
                 ids: 0,
                 entities,
@@ -134,6 +132,13 @@ impl Scene {
         Some(self.total_tick_time.div_f64(self.ticks as f64))
     }
 
+    pub fn average_delta_tick(&self) -> time::Duration {
+        if self.ticks == 0 || self.total_delta_tick_time.is_zero() {
+            return self.total_delta_tick_time
+        }
+        self.total_delta_tick_time.div_f64(self.ticks as f64)
+    }
+
     fn get_name(&self) -> &str {
         self.name.as_str()
     }
@@ -144,6 +149,7 @@ impl Debug for Scene {
         f.debug_struct(self.get_name())
             .field("ticks", &self.ticks)
             .field("avg_tick", &self.average_tick())
+            .field("avg_∆tick", &self.average_delta_tick())
             .field("entities", &self.entities.len())
             .finish()
     }
