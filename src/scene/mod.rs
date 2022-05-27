@@ -88,6 +88,15 @@ impl Scene {
         Ok(())
     }
 
+    pub fn run(&mut self, epochs: usize) -> Result<(), ZapataError> {
+        for epoch in 0..epochs {
+            if let Err(e) = self.update() {
+                return Err(e)
+            }
+        }
+        Ok(())
+    }
+
 
 
 
