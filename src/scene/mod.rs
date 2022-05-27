@@ -7,7 +7,7 @@ use std::{
 };
 use crate::{
     entity::{
-        Component,
+        component::Component,
         Entity,
     },
     error::{

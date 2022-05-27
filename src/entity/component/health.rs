@@ -1,7 +1,7 @@
 use {
     std::rc::Rc,
     crate::{
-        entity::{Component, Entity},
+        entity::{component::Component, Entity},
         error::ZapataError,
         scene::Scene,
     }
@@ -15,7 +15,7 @@ const COMPONENT_NAME: &str = "Health";
 pub struct Damage {
     source: Entity,
     dest:   Entity,
-    cause: Rc<dyn Component>,
+    cause:  dyn Component,
 }
 
 pub struct Health {
