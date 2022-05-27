@@ -4,15 +4,30 @@ mod error;
 mod physics;
 
 use scene::Scene;
-use crate::error::ZapataResult;
+use crate::entity::Component;
+use crate::error::{ZapataError, ZapataResult};
 
 const EPOCH_COUNT: usize = 100;
-const HUMAN_COUNT: usize = 10;
+const HUMAN_COUNT: usize = 100000;
 
 
 
 fn main() -> error::ZapataResult {
-    let ref mut scene = Scene::new(None);
+    let mut scene = Scene::new(None);
+
+    for _ in 0..HUMAN_COUNT {
+        let mut comp: Vec<Box<dyn Component>> = Vec::new();
+        comp.append(&mut vec![
+            Box::new(entity::health::Health::default()),
+        ]);
+
+        match scene.add_entity(comp) {
+            Ok(e) => println!("entity added #{:?}", e),
+            Err(e) => {
+                println!("failed adding entity: {:?}", e);
+            }
+        }
+    }
 
     match scene.run(EPOCH_COUNT) {
         Ok(()) => {
