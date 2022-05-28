@@ -19,6 +19,14 @@ impl Entity {
     pub fn new(id: u64) -> Self {
         Self(id)
     }
+
+
+}
+
+impl From<usize> for Entity {
+    fn from(i: usize) -> Self {
+        return Self(i as u64)
+    }
 }
 
 impl Debug for Entity {
