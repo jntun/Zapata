@@ -1,10 +1,7 @@
-use {
-    std::rc::Rc,
-    crate::{
-        entity::{component::Component, Entity},
-        error::ZapataError,
-        scene::Scene,
-    }
+use crate::{
+    entity::{component::Component, Entity},
+    error::ZapataError,
+    scene::Scene,
 };
 
 pub(crate) type HealthUnit = i64;
@@ -29,13 +26,9 @@ impl Component for Health {
         Ok(())
     }
 
-    fn is_active(&self) -> bool {
-        true
-    }
+    fn is_active(&self) -> bool { true }
 
-    fn get_name(&self) -> &str {
-        COMPONENT_NAME
-    }
+    fn get_name(&self) -> &str { COMPONENT_NAME }
 }
 
 impl Health {
@@ -46,6 +39,9 @@ impl Health {
       }
     }
 
+    pub fn is_alive(&self) -> bool {
+        self.current > 0
+    }
 }
 
 
@@ -65,7 +61,13 @@ impl std::ops::AddAssign<HealthUnit> for Health {
 
 impl std::ops::SubAssign<HealthUnit> for Health {
     fn sub_assign(&mut self, rhs: HealthUnit) {
-        self.current -= rhs;
+        if self.current == 0 || !self.is_alive() { return }; // No health or currently dead
+        let mut dmg = rhs;
+        if self.current < rhs {
+            // If we're about to take more damage than we have health, reduce the damage so it'll put us to 0
+            dmg -= dmg - self.current
+        }
+        self.current -= dmg;
     }
 }
 
