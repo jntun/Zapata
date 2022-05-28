@@ -1,22 +1,22 @@
-use std::{
-    collections::HashMap,
-    fmt::{Debug, Formatter},
-    cell::RefCell,
-    rc::Rc,
-    time,
-};
-use crate::{
-    entity::{
-        component::Component,
-        Entity,
+use {
+    std::{
+        collections::HashMap,
+        fmt::{Debug, Formatter},
+        cell::RefCell,
+        rc::Rc,
+        time,
     },
-    error::{
-        ZapataError,
-    },
-    physics::{
-        effect::Effect,
-        vec3::Vec3,
-    },
+    crate::{
+        entity::{
+            component::Component,
+            Entity,
+        },
+        error:: ZapataError,
+        physics::{
+            effect::Effect,
+            vec3::Vec3,
+        },
+    }
 };
 
 const DEFAULT_NAME: &str = "Zapata";
@@ -71,6 +71,7 @@ impl Scene {
     }
 
     pub fn update(&mut self) -> Result<(), ZapataError> {
+        println!("{}", "-".repeat(100));
         let start = time::SystemTime::now();
         if let Err(e) = self.update_entities() {
             return Err(e);
