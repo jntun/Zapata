@@ -1,23 +1,31 @@
-use crate::{
-    entity::{component::Component, Entity},
-    error::ZapataError,
-    scene::Scene,
+use {
+    std::{
+        rc::Rc,
+        cell::Cell,
+    },
+    crate::{
+        entity::{component::Component, Entity},
+        error::ZapataError,
+        scene::Scene,
+    }
 };
 
 pub(crate) type HealthUnit = i64;
 
 const COMPONENT_NAME: &str = "Health";
 
-pub struct Damage {
+pub struct DamageEntry {
+    amount: i64,
     source: Entity,
     dest:   Entity,
-    cause:  dyn Component,
+    cause:  Rc<Box<dyn Component>>,
 }
 
 pub struct Health {
     start:   HealthUnit,
     current: HealthUnit,
     max:     HealthUnit,
+    damage_log: Vec<Cell<DamageEntry>>,
 }
 
 
@@ -34,9 +42,14 @@ impl Component for Health {
 impl Health {
     pub fn new(max: HealthUnit, start: Option<HealthUnit>) -> Self {
       match start {
-          Some(start) => Self {start, current: start, max},
-          None => Self {start: max, current: max, max},
+          Some(start) => Self {start, current: start, max, damage_log: Vec::new()},
+          None => Self {start: max, current: max, max, damage_log: Vec::new()},
       }
+    }
+
+    pub fn do_damage(&mut self, dmg: DamageEntry) {
+        self.current -= dmg.amount;
+        self.damage_log.push(Cell::new(dmg));
     }
 
     pub fn is_alive(&self) -> bool {
@@ -77,6 +90,7 @@ impl Default for Health {
             start: 100,
             current: 100,
             max: 100,
+            damage_log: Vec::new(),
         }
     }
 }
