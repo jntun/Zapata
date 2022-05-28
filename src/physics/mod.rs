@@ -8,7 +8,7 @@ use {
     effect::Effect,
 };
 
-pub trait PhysicsEntity: Entity {
+pub trait PhysicsEntity {
     fn get_physx_data(&self) -> &PhysxComponent;
     fn mut_physx_data(&mut self) -> &mut PhysxComponent;
 }
@@ -83,7 +83,7 @@ impl Debug for PhysxComponent {
 
 impl Debug for dyn PhysicsEntity {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        f.debug_struct(self.get_name())
+        f.debug_struct("")
             .field("x", &self.get_physx_data().position.x())
             .field("y", &self.get_physx_data().position.y())
             .field("z", &self.get_physx_data().position.z())
