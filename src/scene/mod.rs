@@ -61,7 +61,7 @@ impl Scene {
         Ok(())
     }
 
-    pub fn update(&mut self) -> Result<(), ZapataError> {
+    fn update(&mut self) -> Result<(), ZapataError> {
         let start = time::SystemTime::now();
         if let Err(e) = self.update_entities() {
             return Err(e);
