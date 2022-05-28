@@ -1,4 +1,5 @@
 pub(crate) mod health;
+pub(crate) mod physics;
 
 use crate::{
     error::ZapataError,

@@ -84,7 +84,7 @@ impl Scene {
            Err(e) => return Err(ZapataError::from(e)),
        }
 
-        println!("total: {:?}", self.total_tick_time);
+        //println!("total: {:?}", self.total_tick_time);
         Ok(())
     }
 

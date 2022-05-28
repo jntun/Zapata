@@ -26,7 +26,7 @@ fn main() -> error::ZapataResult {
         ]);
 
         match scene.add_entity(comp) {
-            Ok(e) => println!("entity added #{:?}", e),
+            Ok(e) => (),//println!("entity added {:?}", e),
             Err(e) => {
                 println!("failed adding entity: {:?}", e);
             }
