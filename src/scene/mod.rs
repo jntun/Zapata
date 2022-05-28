@@ -1,6 +1,5 @@
 use {
     std::{
-        collections::HashMap,
         fmt::{Debug, Formatter},
         cell::RefCell,
         rc::Rc,
@@ -26,23 +25,14 @@ pub struct Scene {
     total_tick_time:       time::Duration,
     total_delta_tick_time: time::Duration,
     ticks:                 u64,
-    ids:                   u64,
-    entities:              HashMap<Entity, Vec<Rc<RefCell<Box<dyn Component>>>>>,
+    entities:              Vec<Vec<Rc<RefCell<Box<dyn Component>>>>>,
 }
 
-
 impl Scene {
-    pub fn add_entity(&mut self, components: Vec<Box<dyn Component>>) -> Result<Entity, ZapataError> {
-        let entity = self.new_entity();
+   pub fn add_entity(&mut self, components: Vec<Box<dyn Component>>) -> Result<Entity, ZapataError> {
         let comp_list = components.into_iter().map(|c| Rc::new(RefCell::new(c))).collect();
-        self.entities.insert(entity.clone(), comp_list);
-        Ok(entity)
-    }
-
-    fn new_entity(&mut self) -> Entity {
-        let e = self.ids;
-        self.ids += 1;
-        Entity::new(e)
+        self.entities.push(comp_list);
+        Ok(Entity::from(self.entities.len()-1))
     }
 
     fn pre_update(&mut self) -> Result<(), ZapataError> {
@@ -50,11 +40,11 @@ impl Scene {
     }
 
     fn update_entities(&mut self) -> Result<(), ZapataError> {
-        for (entity, comp_list) in self.entities.iter() {
+        for (i_as_e, comp_list) in self.entities.iter().enumerate() {
             for comp in comp_list.iter() {
                 match comp.try_borrow_mut() {
                     Ok(mut comp) => {
-                        match comp.update(entity.clone(), self) {
+                        match comp.update(Entity::from(i_as_e), self) {
                             Ok(()) => (),
                             Err(e) => return Err(e),
                         }
@@ -71,7 +61,6 @@ impl Scene {
     }
 
     pub fn update(&mut self) -> Result<(), ZapataError> {
-        println!("{}", "-".repeat(100));
         let start = time::SystemTime::now();
         if let Err(e) = self.update_entities() {
             return Err(e);
@@ -85,7 +74,6 @@ impl Scene {
            Err(e) => return Err(ZapataError::from(e)),
        }
 
-        //println!("total: {:?}", self.total_tick_time);
         Ok(())
     }
 
@@ -101,14 +89,13 @@ impl Scene {
 
 impl Scene {
     pub fn new(name: Option<String>) -> Self {
-        let entities = HashMap::new();
+        let entities = Vec::new();
         match name {
             Some(name) => Self {
                 name,
                 total_tick_time: time::Duration::default(),
                 total_delta_tick_time: time::Duration::default(),
                 ticks: 0,
-                ids: 0,
                 entities,
             },
             None => Self {
@@ -116,7 +103,6 @@ impl Scene {
                 total_tick_time: time::Duration::default(),
                 total_delta_tick_time: time::Duration::default(),
                 ticks: 0,
-                ids: 0,
                 entities,
             }
         }

@@ -1,14 +1,8 @@
 pub(crate) mod component;
 
-use {
-    std::{
-        fmt::{Debug, Formatter},
-        hash::Hash,
-    },
-    crate:: error::ZapataError,
-};
+use std::fmt::{Debug, Formatter};
 
-#[derive(PartialEq, Eq, Hash, Copy, Clone)]
+#[derive(PartialEq, Eq, Copy, Clone)]
 pub struct Entity(u64);
 
 impl Entity {
