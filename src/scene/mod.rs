@@ -20,6 +20,7 @@ use {
 
 const DEFAULT_NAME: &str = "Zapata";
 
+#[derive(Default)]
 pub struct Scene {
     name:                  String,
     total_tick_time:       time::Duration,
@@ -89,23 +90,11 @@ impl Scene {
 
 impl Scene {
     pub fn new(name: Option<String>) -> Self {
-        let entities = Vec::new();
-        match name {
-            Some(name) => Self {
-                name,
-                total_tick_time: time::Duration::default(),
-                total_delta_tick_time: time::Duration::default(),
-                ticks: 0,
-                entities,
-            },
-            None => Self {
-                name: String::from(DEFAULT_NAME),
-                total_tick_time: time::Duration::default(),
-                total_delta_tick_time: time::Duration::default(),
-                ticks: 0,
-                entities,
-            }
+        let mut scene = Scene::default();
+        if let Some(name) = name {
+            scene.name = name;
         }
+        scene
     }
 
     pub fn get_gravity(&self) -> Effect {
