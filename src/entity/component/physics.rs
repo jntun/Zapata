@@ -25,9 +25,9 @@ pub struct Physics {
 }
 
 impl Physics {
-    pub fn new(mass: f64, position: Option<Vec3>, onp: Option<bool>) -> Self {
+    pub fn new(mass: f64, position: Option<Vec3>, start_on: Option<bool>) -> Self {
         let mut on = true;
-        if let Some(o) = onp {
+        if let Some(o) = start_on {
             on = o;
         }
         match position {
@@ -69,7 +69,15 @@ impl Physics {
 }
 
 impl Component for Physics {
-    fn update(&mut self, entity: Entity, scene: &Scene) -> Result<(), ZapataError> {
+    fn update(&mut self, entity: Entity, _: &Scene) -> Result<(), ZapataError> {
+        let mut force = Vec3::default();
+        for effect in self.effects.iter() {
+            force += effect.get_force();
+        }
+        self.apply_force(force);
+        self.update_position();
+        println!("{:?} - {:?}", entity, self);
+
         Ok(())
     }
 
