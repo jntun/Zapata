@@ -12,7 +12,7 @@ use {
         },
         error:: ZapataError,
         physics::{
-            effect::Effect,
+            effect::{Effect, Duration},
             vec3::Vec3,
         },
     }
@@ -128,5 +128,16 @@ impl Debug for Scene {
             .field("avg_∆tick", &self.average_delta_tick())
             .field("entities", &self.entities.len())
             .finish()
+    }
+}
+
+impl Default for Scene {
+    fn default() -> Self {
+        Self {
+            name: String::from(DEFAULT_NAME),
+            stats: SceneStats::default(),
+            physics_effects: vec![Effect::new(String::from("Gravity", ), Vec3::new(0.0, -9.821, 0.0), Some(Duration::Indefinite))],
+            entities: Vec::new(),
+        }
     }
 }
