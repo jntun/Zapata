@@ -111,10 +111,6 @@ impl Scene {
         scene
     }
 
-    pub fn get_gravity(&self) -> Effect {
-        Effect::new(String::from("Gravity"), Vec3::new(0.0, -9.821, 0.0), None)
-    }
-
     pub fn average_tick(&self) -> Option<time::Duration> {
         if self.stats.ticks == 0 || self.stats.total_tick_time.is_zero() {
             return None
