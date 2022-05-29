@@ -31,6 +31,7 @@ struct SceneStats {
 pub struct Scene {
     name:                  String,
     stats:                 SceneStats,
+    pub physics_effects:   Vec<Effect>,
     entities:              Vec<Vec<Rc<RefCell<Box<dyn Component>>>>>,
 }
 
