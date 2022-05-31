@@ -1,11 +1,8 @@
-use {
-    crate::{
-        entity::{component::*, Entity},
-        error::ZapataError,
-        physics::vec3::Vec3,
-        scene::{tracked, Scene},
-    },
-    std::{cell::RefCell, rc::Rc},
+use crate::{
+    entity::{component::*, Entity},
+    error::ZapataError,
+    physics::vec3::Vec3,
+    scene::{tracked, Scene},
 };
 
 const COMPONENT_NAME: &str = "Hitbox";
@@ -19,7 +16,7 @@ impl Component for Hitbox {
             match e {
                 tracked::TrackedComponent::Physics(physx) => {
                     todo!("{:?}", physx)
-                },
+                }
                 _ => return false,
             }
             true
@@ -27,7 +24,12 @@ impl Component for Hitbox {
 
         match scene.act_on_component_for_entity(entity, do_physx) {
             Ok(()) => return Ok(()),
-            Err(e) => return Err(ZapataError::FatalError(String::from(format!("hitbox update failed: {:?}", e)))),
+            Err(e) => {
+                return Err(ZapataError::FatalError(String::from(format!(
+                    "hitbox update failed: {:?}",
+                    e
+                ))))
+            }
         }
     }
 
