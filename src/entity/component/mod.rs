@@ -1,4 +1,5 @@
 pub(crate) mod health;
+pub(crate) mod hitbox;
 pub(crate) mod physics;
 pub(crate) mod printer;
 
