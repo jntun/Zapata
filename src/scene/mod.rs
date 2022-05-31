@@ -1,21 +1,21 @@
+pub(crate) mod tracked;
+
 use {
+    crate::{
+        entity::Entity,
+        error::ZapataError,
+        physics::{
+            effect::{Duration, Effect},
+            vec3::Vec3,
+        },
+    },
     std::{
-        fmt::{Debug, Formatter},
         cell::RefCell,
+        fmt::{Debug, Formatter},
         rc::Rc,
         time,
     },
-    crate::{
-        entity::{
-            component::Component,
-            Entity,
-        },
-        error:: ZapataError,
-        physics::{
-            effect::{Effect, Duration},
-            vec3::Vec3,
-        },
-    }
+    tracked::TrackedComponent,
 };
 
 const DEFAULT_NAME: &str = "Zapata";
@@ -29,17 +29,33 @@ struct SceneStats {
 }
 
 pub struct Scene {
-    name:                  String,
-    stats:                 SceneStats,
-    pub physics_effects:   Vec<Effect>,
-    entities:              Vec<Vec<Rc<RefCell<Box<dyn Component>>>>>,
+    name: String,
+    stats: SceneStats,
+    pub physics_effects: Vec<Effect>,
+    entities: Vec<Vec<TrackedComponent>>,
 }
 
 impl Scene {
-   pub fn add_entity(&mut self, components: Vec<Box<dyn Component>>) -> Result<Entity, ZapataError> {
-        let comp_list = components.into_iter().map(|c| Rc::new(RefCell::new(c))).collect();
-        self.entities.push(comp_list);
-        Ok(Entity::from(self.entities.len()-1))
+    pub fn act_on_component_for_entity<T: Fn(&TrackedComponent) -> bool>(
+        &self,
+        entity: Entity,
+        act: T,
+    ) -> Result<(), ZapataError> {
+        if let Some(comp_list) = self.component_list_for_entity(entity) {
+            for component in comp_list.into_iter() {
+                if act(component) { return Ok(()) }
+            }
+        }
+        Err(ZapataError::RuntimeError(String::from(format!("couldn't act on {:?}", entity))))
+    }
+
+    fn component_list_for_entity(&self, entity: Entity) -> Option<&Vec<TrackedComponent>> {
+        self.entities.get(entity.index())
+    }
+
+    pub fn add_entity(&mut self, components: Vec<TrackedComponent>) -> Result<Entity, ZapataError> {
+        self.entities.push(components);
+        Ok(Entity(self.entities.len() - 1))
     }
 
     fn pre_update(&mut self) -> Result<(), ZapataError> {
@@ -49,14 +65,8 @@ impl Scene {
     fn update_entities(&mut self) -> Result<(), ZapataError> {
         for (i_as_e, comp_list) in self.entities.iter().enumerate() {
             for comp in comp_list.iter() {
-                match comp.try_borrow_mut() {
-                    Ok(mut comp) => {
-                        match comp.update(Entity::from(i_as_e), self) {
-                            Ok(()) => (),
-                            Err(e) => return Err(e),
-                        }
-                    },
-                    Err(e) => return Err(ZapataError::from(e)),
+                if let Err(e) = comp.update(Entity(i_as_e), self) {
+                    return Err(e);
                 }
             }
         }
