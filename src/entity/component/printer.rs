@@ -1,8 +1,5 @@
 use crate::{
-    entity::{
-        Entity,
-        component::Component,
-    },
+    entity::{component::Component, Entity},
     error::ZapataError,
     scene::Scene,
 };

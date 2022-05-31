@@ -1,11 +1,6 @@
 use {
-    std::fmt::{Debug, Formatter},
-    crate::{
-        entity::Entity,
-        physics::{
-            vec3::Vec3,
-        },
-    }
+    crate::physics::vec3::Vec3,
+    std::fmt::{Debug},
 };
 
 #[derive(Debug, Clone)]
@@ -16,7 +11,9 @@ pub struct Effect {
 }
 
 impl Effect {
-    pub fn get_force(&self) -> Vec3 { self.force }
+    pub fn get_force(&self) -> Vec3 {
+        self.force
+    }
 
     pub fn is_alive(&self, current_tick: u64) -> bool {
         match self.duration {
@@ -45,5 +42,5 @@ impl Effect {
 #[derive(Copy, Clone, Debug)]
 pub enum Duration {
     Indefinite,
-    EndTick(u64)
+    EndTick(u64),
 }

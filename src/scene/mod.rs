@@ -10,9 +10,7 @@ use {
         },
     },
     std::{
-        cell::RefCell,
         fmt::{Debug, Formatter},
-        rc::Rc,
         time,
     },
     tracked::TrackedComponent,
@@ -22,10 +20,10 @@ const DEFAULT_NAME: &str = "Zapata";
 
 #[derive(Default)]
 struct SceneStats {
-    total_tick_time:       time::Duration,
+    total_tick_time: time::Duration,
     total_delta_tick_time: time::Duration,
-    last_tick_duration:    time::Duration,
-    ticks:                 u64,
+    last_tick_duration: time::Duration,
+    ticks: u64,
 }
 
 pub struct Scene {
@@ -105,7 +103,7 @@ impl Scene {
     pub fn run(&mut self, epochs: usize) -> Result<(), ZapataError> {
         for epoch in 0..epochs {
             if let Err(e) = self.update() {
-                return Err(e)
+                return Err(e);
             }
         }
         Ok(())
@@ -123,16 +121,18 @@ impl Scene {
 
     pub fn average_tick(&self) -> Option<time::Duration> {
         if self.stats.ticks == 0 || self.stats.total_tick_time.is_zero() {
-            return None
+            return None;
         }
         Some(self.stats.total_tick_time.div_f64(self.stats.ticks as f64))
     }
 
     pub fn average_delta_tick(&self) -> time::Duration {
         if self.stats.ticks == 0 || self.stats.total_delta_tick_time.is_zero() {
-            return self.stats.total_delta_tick_time
+            return self.stats.total_delta_tick_time;
         }
-        self.stats.total_delta_tick_time.div_f64(self.stats.ticks as f64)
+        self.stats
+            .total_delta_tick_time
+            .div_f64(self.stats.ticks as f64)
     }
 
     fn get_name(&self) -> &str {
@@ -156,7 +156,11 @@ impl Default for Scene {
         Self {
             name: String::from(DEFAULT_NAME),
             stats: SceneStats::default(),
-            physics_effects: vec![Effect::new(String::from("Gravity", ), Vec3::new(0.0, -9.821, 0.0), Some(Duration::Indefinite))],
+            physics_effects: vec![Effect::new(
+                String::from("Gravity"),
+                Vec3::new(0.0, -9.821, 0.0),
+                Some(Duration::Indefinite),
+            )],
             entities: Vec::new(),
         }
     }

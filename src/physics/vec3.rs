@@ -4,27 +4,35 @@ use std::ops::*;
 pub struct Vec3(f64, f64, f64);
 
 impl Vec3 {
-    pub fn x(&self) -> f64 { self.0 }
-    pub fn y(&self) -> f64 { self.1 }
-    pub fn z(&self) -> f64 { self.2 }
-    pub fn xyz(&self) -> (f64, f64, f64) { (self.x(), self.y(), self.z()) }
+    pub fn x(&self) -> f64 {
+        self.0
+    }
+    pub fn y(&self) -> f64 {
+        self.1
+    }
+    pub fn z(&self) -> f64 {
+        self.2
+    }
+    pub fn xyz(&self) -> (f64, f64, f64) {
+        (self.x(), self.y(), self.z())
+    }
 
     pub fn new(x: f64, y: f64, z: f64) -> Self {
-                                             Self(x, y, z)
-                                                          }
+        Self(x, y, z)
+    }
 
     pub fn normalize(&self) -> Self {
         self.clone() / self.len()
     }
 
     pub fn len(&self) -> f64 {
-                           self.clone() * self.clone()
-                                                      }
+        self.clone() * self.clone()
+    }
 }
 
 fn multi(v1: Vec3, v2: Vec3) -> f64 {
-                                  v1 * v2
-                                         }
+    v1 * v2
+}
 
 // V * F = Vec3
 impl Mul<f64> for Vec3 {
@@ -63,10 +71,7 @@ impl Add<Vec3> for Vec3 {
     type Output = Self;
 
     fn add(self, rhs: Vec3) -> Self::Output {
-        Self(self.x() + rhs.x(),
-             self.y() + rhs.y(),
-             self.z() + rhs.z(),
-        )
+        Self(self.x() + rhs.x(), self.y() + rhs.y(), self.z() + rhs.z())
     }
 }
 

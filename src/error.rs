@@ -1,21 +1,21 @@
 use std::{
-    process::{ExitCode, Termination},
     cell::BorrowMutError,
+    process::{ExitCode, Termination},
     time::SystemTimeError,
 };
 
 #[repr(u8)]
 pub enum ZapataResult {
-    Success =  0,
-    Fatal   =  1,
-    Runtime =  2,
+    Success = 0,
+    Fatal = 1,
+    Runtime = 2,
 }
 
 impl From<ZapataError> for ZapataResult {
     fn from(e: ZapataError) -> Self {
         match e {
             ZapataError::FatalError(e) => ZapataResult::Fatal,
-            ZapataError::RuntimeError(e) => ZapataResult::Success
+            ZapataError::RuntimeError(e) => ZapataResult::Success,
         }
     }
 }

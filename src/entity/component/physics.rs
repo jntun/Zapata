@@ -1,27 +1,22 @@
 use {
-    std::{
-        fmt::{Debug, Formatter}
-    },
     crate::{
-        physics::{effect::Effect, vec3::Vec3},
-        entity::{
-            Entity,
-            component::Component,
-        },
-        scene::Scene,
+        entity::{component::Component, Entity},
         error::ZapataError,
+        physics::{effect::Effect, vec3::Vec3},
+        scene::Scene,
     },
+    std::fmt::{Debug, Formatter},
 };
 
 const COMPONENT_NAME: &str = "Physics";
 
 #[derive(Clone)]
 pub struct Physics {
-    on:       bool,
-    mass:     f64,
+    on: bool,
+    mass: f64,
     momentum: Vec3,
     position: Vec3,
-    effects:  Vec<Effect>,
+    effects: Vec<Effect>,
 }
 
 impl Physics {
@@ -44,7 +39,7 @@ impl Physics {
                 momentum: Vec3::new(0.0, 0.0, 0.0),
                 position: Vec3::new(0.0, 0.0, 0.0),
                 effects: Vec::new(),
-            }
+            },
         }
     }
 
