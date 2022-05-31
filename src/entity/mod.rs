@@ -1,25 +1,18 @@
 pub(crate) mod component;
 
-use std::fmt::{Debug, Formatter};
+use std::{
+    fmt::{Debug, Formatter},
+};
 
 #[derive(PartialEq, Eq, Copy, Clone)]
-pub struct Entity(u64);
+pub struct Entity(pub usize);
 
 impl Entity {
     pub fn as_u64(&self) -> u64 {
+        self.0 as u64
+    }
+    pub fn index(&self) -> usize {
         self.0
-    }
-
-    pub fn new(id: u64) -> Self {
-        Self(id)
-    }
-
-
-}
-
-impl From<usize> for Entity {
-    fn from(i: usize) -> Self {
-        return Self(i as u64)
     }
 }
 
