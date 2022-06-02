@@ -1,15 +1,11 @@
+pub(crate) mod collider;
 pub(crate) mod health;
-pub(crate) mod hitbox;
 pub(crate) mod physics;
 pub(crate) mod printer;
 
 use std::fmt::Formatter;
 use {
-    crate::{
-        entity::Entity,
-        error::ZapataError,
-        scene::Scene,
-    },
+    crate::{entity::Entity, error::ZapataError, scene::Scene},
     std::fmt::Debug,
 };
 

@@ -11,7 +11,7 @@ use {
 #[derive(Debug)]
 pub enum TrackedComponent {
     Physics(Rc<RefCell<component::physics::Physics>>),
-    Hitbox(Rc<RefCell<component::hitbox::Hitbox>>),
+    Hitbox(Rc<RefCell<component::collider::Collider>>),
     Health(Rc<RefCell<component::health::Health>>),
     Vague(Rc<RefCell<Box<dyn component::Component>>>),
 }

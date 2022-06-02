@@ -27,9 +27,9 @@ fn main() -> error::ZapataResult {
             tracked::TrackedComponent::Physics(Rc::new(RefCell::new(
                 component::physics::Physics::new(21.0, Some(Vec3::new(x, x, x)), None),
             ))),
-            tracked::TrackedComponent::Hitbox(Rc::new(RefCell::new(component::hitbox::Hitbox(
-                Vec3::new(0.75, 2.0, 0.2),
-            )))),
+            tracked::TrackedComponent::Hitbox(Rc::new(RefCell::new(
+                component::collider::Collider(),
+            ))),
         ]);
 
         match scene.add_entity(comp) {

@@ -1,16 +1,15 @@
 use crate::{
     entity::{component::*, Entity},
     error::ZapataError,
-    physics::vec3::Vec3,
     scene::{tracked, Scene},
 };
 
 const COMPONENT_NAME: &str = "Hitbox";
 
 #[derive(Debug)]
-pub struct Hitbox(pub Vec3);
+pub struct Collider();
 
-impl Component for Hitbox {
+impl Component for Collider {
     fn update(&mut self, entity: Entity, scene: &Scene) -> Result<(), ZapataError> {
         let do_physx = |e: &tracked::TrackedComponent| -> bool {
             match e {
