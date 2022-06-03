@@ -84,18 +84,19 @@ impl Scene {
         }
         let end = time::SystemTime::now();
 
-       match end.duration_since(start) {
-           Ok(dur) => {
-               self.stats.total_tick_time += dur;
+        match end.duration_since(start) {
+            Ok(dur) => {
+                self.stats.total_tick_time += dur;
 
-               if dur > self.stats.last_tick_duration { // If this tick took longer than the previous, add the dur to the total delta time
-                   self.stats.total_delta_tick_time += dur - self.stats.last_tick_duration
-               }
+                if dur > self.stats.last_tick_duration {
+                    // If this tick took longer than the previous, add the dur to the total delta time
+                    self.stats.total_delta_tick_time += dur - self.stats.last_tick_duration
+                }
 
-               self.stats.last_tick_duration = dur;
-           },
-           Err(e) => return Err(ZapataError::from(e)),
-       }
+                self.stats.last_tick_duration = dur;
+            }
+            Err(e) => return Err(ZapataError::from(e)),
+        }
 
         Ok(())
     }
