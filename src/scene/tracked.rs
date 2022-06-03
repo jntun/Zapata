@@ -1,6 +1,6 @@
 use {
     crate::{
-        entity::{component, Entity},
+        entity::{component, component::Component, Entity},
         error::ZapataError,
         scene::Scene,
     },
@@ -12,7 +12,7 @@ pub enum TrackedComponent {
     Physics(Rc<RefCell<component::physics::Physics>>),
     Collider(Rc<RefCell<component::collider::Collider>>),
     Health(Rc<RefCell<component::health::Health>>),
-    Vague(Rc<RefCell<Box<dyn component::Component>>>),
+    Vague(Rc<RefCell<Box<dyn Component>>>),
 }
 
 impl TrackedComponent {
