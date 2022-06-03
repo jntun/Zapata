@@ -25,3 +25,21 @@ impl TrackedComponent {
         }
     }
 }
+
+impl From<component::physics::Physics> for TrackedComponent {
+    fn from(component: component::physics::Physics) -> Self {
+        Self::Physics(Rc::new(RefCell::new(component)))
+    }
+}
+
+impl From<component::health::Health> for TrackedComponent {
+    fn from(component: component::health::Health) -> Self {
+        Self::Health(Rc::new(RefCell::new(component)))
+    }
+}
+
+impl From<component::collider::Collider> for TrackedComponent {
+    fn from(component: component::collider::Collider) -> Self {
+        Self::Collider(Rc::new(RefCell::new(component)))
+    }
+}
