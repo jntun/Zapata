@@ -65,10 +65,7 @@ impl Physics {
 
 impl Component for Physics {
     fn update(&mut self, entity: Entity, scene: &Scene) -> Result<(), ZapataError> {
-        let mut force = Vec3::default();
-        for effect in self.effects.iter() {
-            force += effect.get_force();
-        }
+        let mut force = self.effects_force_sum();
         for scene_effect in scene.physics_effects.iter() {
             force += scene_effect.get_force();
         }
