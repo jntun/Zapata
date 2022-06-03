@@ -1,35 +1,36 @@
 use crate::{
     entity::{component::*, Entity},
     error::ZapataError,
+    physics,
     scene::{tracked, Scene},
 };
 
 const COMPONENT_NAME: &str = "Hitbox";
 
 #[derive(Debug)]
-pub struct Collider();
+pub struct Collider(pub Vec<physics::hitbox::Hitbox>);
+
+impl Collider {}
 
 impl Component for Collider {
     fn update(&mut self, entity: Entity, scene: &Scene) -> Result<(), ZapataError> {
-        let do_physx = |e: &tracked::TrackedComponent| -> bool {
+        let collide = |e: &tracked::TrackedComponent| -> bool {
             match e {
-                tracked::TrackedComponent::Physics(physx) => {
-                    todo!("{:?}", physx)
+                tracked::TrackedComponent::Collider(collider) => {
+                    todo!("{:?}", collider)
                 }
                 _ => return false,
             }
             true
         };
 
-        match scene.act_on_component_for_entity(entity, do_physx) {
-            Ok(()) => return Ok(()),
-            Err(e) => {
-                return Err(ZapataError::FatalError(String::from(format!(
-                    "hitbox update failed: {:?}",
-                    e
-                ))))
-            }
-        }
+        return match scene.act_on_component_for_entity(entity, collide) {
+            Ok(()) => Ok(()),
+            Err(e) => Err(ZapataError::FatalError(String::from(format!(
+                "hitbox update failed: {:?}",
+                e
+            )))),
+        };
     }
 
     fn is_active(&self) -> bool {

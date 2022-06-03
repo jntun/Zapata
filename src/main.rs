@@ -21,15 +21,18 @@ fn main() -> error::ZapataResult {
         let mut comp: Vec<tracked::TrackedComponent> = Vec::new();
         let x = i as f64;
         comp.append(&mut vec![
-            tracked::TrackedComponent::Health(Rc::new(RefCell::new(
-                component::health::Health::new((i * 10) as i64, Some((i * 5) as i64)),
-            ))),
-            tracked::TrackedComponent::Physics(Rc::new(RefCell::new(
-                component::physics::Physics::new(21.0, Some(Vec3::new(x, x, x)), None),
-            ))),
-            tracked::TrackedComponent::Hitbox(Rc::new(RefCell::new(
-                component::collider::Collider(),
-            ))),
+            tracked::TrackedComponent::from(component::health::Health::new(
+                (i * 10) as i64,
+                Some((i * 5) as i64),
+            )),
+            tracked::TrackedComponent::from(component::physics::Physics::new(
+                21.0,
+                Some(Vec3::new(x, x, x)),
+                None,
+            )),
+            tracked::TrackedComponent::from(component::collider::Collider(vec![
+                physics::hitbox::Hitbox::new(Vec3::new(1.0, 1.0, 1.0), Vec3::new(2.0, 2.0, 2.0)),
+            ])),
         ]);
 
         match scene.add_entity(comp) {
