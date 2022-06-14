@@ -145,6 +145,7 @@ impl Debug for Scene {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         f.debug_struct(self.get_name())
             .field("ticks", &self.stats.ticks)
+            .field("runtime", &self.stats.total_tick_time)
             .field("avg_tick", &self.average_tick())
             .field("avg_∆tick", &self.average_delta_tick())
             .field("entities", &self.entities.len())
