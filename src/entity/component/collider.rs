@@ -14,14 +14,11 @@ impl Collider {}
 
 impl Component for Collider {
     fn update(&mut self, self_entity: Entity, scene: &Scene) -> Result<(), ZapataError> {
-        let collide = |e: &tracked::TrackedComponent| -> bool {
-            return true;
-        };
+        for index in 0..scene.entity_list_end().index() {
+            //println!("{:?}", scene.component_list_for_entity(Entity::from(index)));
+        }
 
-        return match scene.act_on_all_other_entities(self_entity, collide) {
-            Ok(entities) => Ok(()),
-            Err(e) => Err(e),
-        };
+        Ok(())
     }
 
     fn is_active(&self) -> bool {

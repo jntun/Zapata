@@ -34,52 +34,12 @@ pub struct Scene {
 }
 
 impl Scene {
-    pub fn act_on_component_for_entity<T: Fn(&TrackedComponent) -> bool>(
-        &self,
-        entity: Entity,
-        act: T,
-    ) -> Result<(), ZapataError> {
-        if let Some(comp_list) = self.component_list_for_entity(entity) {
-            for component in comp_list.into_iter() {
-                if act(component) {
-                    return Ok(());
-                }
-            }
-        }
-        Err(ZapataError::RuntimeError(String::from(format!(
-            "couldn't act on {:?}",
-            entity
-        ))))
-    }
-
-    pub fn act_on_all_other_entities<T: Fn(&TrackedComponent) -> bool>(
-        &self,
-        calling_entity: Entity,
-        act: T,
-    ) -> Result<Vec<Entity>, ZapataError> {
-        let mut affected_entities = Vec::new();
-        for (entity_index, scene_entity) in self.entities.iter().enumerate() {
-            // If the entity index is the entity who's component is currently calling this function, skip it so the entity doesn't try to update 'itself'
-            if entity_index == calling_entity.0 {
-                continue;
-            }
-
-            let mut acted = false;
-            for component in scene_entity.into_iter() {
-                if act(component) {
-                    if !acted {
-                        // Only append once, not for every successful component
-                        affected_entities.push(Entity::from(entity_index));
-                        acted = true;
-                    }
-                }
-            }
-        }
-        Ok(affected_entities)
-    }
-
-    fn component_list_for_entity(&self, entity: Entity) -> Option<&Vec<TrackedComponent>> {
+    pub fn component_list_for_entity(&self, entity: Entity) -> Option<&Vec<TrackedComponent>> {
         self.entities.get(entity.index())
+    }
+
+    pub fn entity_list_end(&self) -> Entity {
+        Entity::from(self.entities.len() - 1)
     }
 
     pub fn add_entity(&mut self, components: Vec<TrackedComponent>) -> Result<Entity, ZapataError> {
