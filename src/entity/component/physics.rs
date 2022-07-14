@@ -8,7 +8,7 @@ use {
     std::fmt::{Debug, Formatter},
 };
 
-const COMPONENT_NAME: &str = "Physics";
+pub const COMPONENT_NAME: &str = "Physics";
 
 #[derive(Clone)]
 pub struct Physics {
@@ -55,11 +55,8 @@ impl Physics {
         total
     }
 
-    pub fn apply_force(&mut self, force: Vec3) {
-        self.momentum += force
-    }
-    pub fn update_position(&mut self) {
-        self.position += self.momentum / self.mass
+    pub fn position(&self) -> Vec3 {
+        self.position
     }
 }
 
@@ -70,8 +67,8 @@ impl Component for Physics {
             force += scene_effect.get_force();
         }
 
-        self.apply_force(force);
-        self.update_position();
+        self.momentum += force;
+        self.position += self.momentum / self.mass;
 
         Ok(())
     }
