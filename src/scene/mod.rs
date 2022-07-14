@@ -34,19 +34,6 @@ pub struct Scene {
 }
 
 impl Scene {
-    pub fn component_list_for_entity(&self, entity: Entity) -> Option<&Vec<TrackedComponent>> {
-        self.entities.get(entity.index())
-    }
-
-    pub fn entity_list_end(&self) -> Entity {
-        Entity::from(self.entities.len() - 1)
-    }
-
-    pub fn add_entity(&mut self, components: Vec<TrackedComponent>) -> Result<Entity, ZapataError> {
-        self.entities.push(components);
-        Ok(Entity(self.entities.len() - 1))
-    }
-
     fn pre_update(&mut self) -> Result<(), ZapataError> {
         Ok(())
     }
@@ -103,6 +90,23 @@ impl Scene {
 }
 
 impl Scene {
+    pub fn component_list_for_entity(&self, entity: Entity) -> Option<&Vec<TrackedComponent>> {
+        self.entities.get(entity.index())
+    }
+
+    pub fn entity_list_end(&self) -> Entity {
+        Entity::from(self.entities.len())
+    }
+
+    pub fn add_entity(&mut self, components: Vec<TrackedComponent>) -> Result<Entity, ZapataError> {
+        self.entities.push(components);
+        Ok(Entity(self.entities.len()))
+    }
+
+    pub fn current_tick(&self) -> u64 {
+        self.stats.ticks
+    }
+
     pub fn new(name: Option<String>) -> Self {
         let mut scene = Scene::default();
         if let Some(name) = name {
