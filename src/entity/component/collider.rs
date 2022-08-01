@@ -13,8 +13,6 @@ const COMPONENT_NAME: &str = "Collider";
 #[derive(Debug)]
 pub struct Collider(pub Vec<physics::hitbox::Hitbox>);
 
-// FIXME: collider should only hold a single hitbox. if you want another hitbox, add another component.
-
 impl Collider {
     fn try_collide(
         &self,
