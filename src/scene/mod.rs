@@ -1,164 +1,107 @@
+pub(crate) mod ipc;
+pub(crate) mod scene;
 pub(crate) mod tracked;
 
+use crate::error::ZapataError;
 use {
-    crate::{
-        entity::Entity,
-        error::ZapataError,
-        physics::{
-            effect::{Duration, Effect},
-            vec3::Vec3,
-        },
-    },
-    std::{
-        fmt::{Debug, Formatter},
-        time,
-    },
-    tracked::TrackedComponent,
+    crate::{physics::effect::Effect, scene::tracked::TrackedComponent},
+    std::{result::Result, time, vec::Vec},
 };
 
-const DEFAULT_NAME: &str = "Zapata";
+#[derive(Default, Debug)]
+pub struct SceneManager {
+    running: bool,
+    scenes: Vec<Scene>,
+    lifetime: Lifetime,
+}
 
-#[derive(Default)]
-struct SceneStats {
+#[derive(Debug)]
+struct Lifetime {
     total_tick_time: time::Duration,
     total_delta_tick_time: time::Duration,
     last_tick_duration: time::Duration,
+    last_tick_timestamp: time::Instant,
     ticks: u64,
+}
+
+impl Lifetime {
+    pub fn start(&mut self) {
+        self.last_tick_timestamp = time::Instant::now();
+    }
+
+    pub fn stop(&mut self) {
+        let tick_dur = time::Instant::now().duration_since(self.last_tick_timestamp);
+        self.total_tick_time += tick_dur;
+
+        if tick_dur > self.last_tick_duration {
+            // If this tick took longer than the previous, add the dur to the total delta time
+            self.total_delta_tick_time += tick_dur - self.last_tick_duration
+        }
+
+        self.last_tick_duration = tick_dur;
+        self.ticks += 1;
+    }
+
+    pub fn new() -> Self {
+        Self {
+            total_tick_time: time::Duration::from_secs(0),
+            total_delta_tick_time: time::Duration::from_secs(0),
+            last_tick_duration: time::Duration::from_secs(0),
+            last_tick_timestamp: time::Instant::now(),
+            ticks: 0,
+        }
+    }
+}
+
+impl Default for Lifetime {
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 pub struct Scene {
     name: String,
-    stats: SceneStats,
+    lifetime: Lifetime,
     pub physics_effects: Vec<Effect>,
     entities: Vec<Vec<TrackedComponent>>,
 }
 
-impl Scene {
-    fn pre_update(&mut self) -> Result<(), ZapataError> {
-        Ok(())
+impl SceneManager {
+    pub fn add_scene(&mut self, scene: Scene) {
+        self.scenes.push(scene);
     }
 
-    fn update_entities(&mut self) -> Result<(), ZapataError> {
-        for (i_as_e, comp_list) in self.entities.iter().enumerate() {
-            for comp in comp_list.iter() {
-                if let Err(e) = comp.update(Entity(i_as_e), self) {
+    pub fn run(&mut self, epochs: Option<usize>) -> Result<(), ZapataError> {
+        self.running = true;
+
+        while self.running {
+            self.lifetime.start();
+            if let Some(stop) = epochs {
+                if self.lifetime.ticks == stop as u64 {
+                    break;
+                }
+            }
+
+            for scene in self.scenes.iter_mut() {
+                if let Err(e) = scene.update() {
                     return Err(e);
                 }
             }
+
+            self.lifetime.stop();
         }
         Ok(())
     }
 
-    fn post_update(&mut self) -> Result<(), ZapataError> {
-        Ok(())
+    pub fn stop(&mut self) {
+        self.running = false;
     }
 
-    fn update(&mut self) -> Result<(), ZapataError> {
-        let start = time::SystemTime::now();
-        if let Err(e) = self.update_entities() {
-            return Err(e);
-        } else {
-            self.stats.ticks += 1;
-        }
-        let end = time::SystemTime::now();
-
-        match end.duration_since(start) {
-            Ok(dur) => {
-                self.stats.total_tick_time += dur;
-
-                if dur > self.stats.last_tick_duration {
-                    // If this tick took longer than the previous, add the dur to the total delta time
-                    self.stats.total_delta_tick_time += dur - self.stats.last_tick_duration
-                }
-
-                self.stats.last_tick_duration = dur;
-            }
-            Err(e) => return Err(ZapataError::from(e)),
-        }
-
-        Ok(())
-    }
-
-    pub fn run(&mut self, epochs: usize) -> Result<(), ZapataError> {
-        for epoch in 0..epochs {
-            if let Err(e) = self.update() {
-                return Err(e);
-            }
-        }
-        Ok(())
-    }
-}
-
-impl Scene {
-    pub fn component_list_for_entity(&self, entity: Entity) -> Option<&Vec<TrackedComponent>> {
-        self.entities.get(entity.index())
-    }
-
-    pub fn entity_list_end(&self) -> Entity {
-        Entity::from(self.entities.len())
-    }
-
-    pub fn add_entity(&mut self, components: Vec<TrackedComponent>) -> Result<Entity, ZapataError> {
-        self.entities.push(components);
-        Ok(Entity(self.entities.len()))
-    }
-
-    pub fn current_tick(&self) -> u64 {
-        self.stats.ticks
-    }
-
-    pub fn new(name: Option<String>) -> Self {
-        let mut scene = Scene::default();
-        if let Some(name) = name {
-            scene.name = name;
-        }
-        scene
-    }
-
-    pub fn average_tick(&self) -> Option<time::Duration> {
-        if self.stats.ticks == 0 || self.stats.total_tick_time.is_zero() {
-            return None;
-        }
-        Some(self.stats.total_tick_time.div_f64(self.stats.ticks as f64))
-    }
-
-    pub fn average_delta_tick(&self) -> time::Duration {
-        if self.stats.ticks == 0 || self.stats.total_delta_tick_time.is_zero() {
-            return self.stats.total_delta_tick_time;
-        }
-        self.stats
-            .total_delta_tick_time
-            .div_f64(self.stats.ticks as f64)
-    }
-
-    fn get_name(&self) -> &str {
-        self.name.as_str()
-    }
-}
-
-impl Debug for Scene {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        f.debug_struct(self.get_name())
-            .field("ticks", &self.stats.ticks)
-            .field("runtime", &self.stats.total_tick_time)
-            .field("avg_tick", &self.average_tick())
-            .field("avg_∆tick", &self.average_delta_tick())
-            .field("entities", &self.entities.len())
-            .finish()
-    }
-}
-
-impl Default for Scene {
-    fn default() -> Self {
+    pub fn new(scenes: Vec<Scene>) -> Self {
         Self {
-            name: String::from(DEFAULT_NAME),
-            stats: SceneStats::default(),
-            physics_effects: vec![Effect::new(
-                String::from("Gravity"),
-                Vec3::new(0.0, -9.821, 0.0),
-                Some(Duration::Indefinite),
-            )],
-            entities: Vec::new(),
+            scenes,
+            lifetime: Lifetime::new(),
+            running: false,
         }
     }
 }
