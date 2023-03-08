@@ -2,9 +2,8 @@ pub(crate) mod ipc;
 pub(crate) mod scene;
 pub(crate) mod tracked;
 
-use crate::error::ZapataError;
 use {
-    crate::{physics::effect::Effect, scene::tracked::TrackedComponent},
+    crate::{error::ZapataError, physics::effect::Effect, scene::tracked::TrackedComponent},
     std::{result::Result, time, vec::Vec},
 };
 
@@ -22,6 +21,13 @@ struct Lifetime {
     last_tick_duration: time::Duration,
     last_tick_timestamp: time::Instant,
     ticks: u64,
+}
+
+pub struct Scene {
+    name: String,
+    lifetime: Lifetime,
+    pub physics_effects: Vec<Effect>,
+    entities: Vec<Vec<TrackedComponent>>,
 }
 
 impl Lifetime {
@@ -57,13 +63,6 @@ impl Default for Lifetime {
     fn default() -> Self {
         Self::new()
     }
-}
-
-pub struct Scene {
-    name: String,
-    lifetime: Lifetime,
-    pub physics_effects: Vec<Effect>,
-    entities: Vec<Vec<TrackedComponent>>,
 }
 
 impl SceneManager {
