@@ -13,7 +13,6 @@ pub enum TrackedComponent {
     Physics(Rc<RefCell<component::physics::Physics>>),
     Collider(Rc<RefCell<component::collider::Collider>>),
     Health(Rc<RefCell<component::health::Health>>),
-    Vague(Rc<RefCell<Box<dyn Component>>>),
 }
 
 impl TrackedComponent {
@@ -22,7 +21,6 @@ impl TrackedComponent {
             TrackedComponent::Physics(e) => e.borrow_mut().update(entity, scene),
             TrackedComponent::Collider(e) => e.borrow_mut().update(entity, scene),
             TrackedComponent::Health(e) => e.borrow_mut().update(entity, scene),
-            TrackedComponent::Vague(e) => e.borrow_mut().update(entity, scene),
         }
     }
 }
@@ -50,7 +48,7 @@ pub fn human(position: Option<Vec3>) -> Vec<TrackedComponent> {
         TrackedComponent::from(component::health::Health::new(100, None)),
         TrackedComponent::from(component::physics::Physics::new(21.0, position, None)),
         TrackedComponent::from(component::collider::Collider(vec![
-            physics::hitbox::Hitbox::new(Vec3::new(1.0, 1.0, 1.0), Vec3::new(2.0, 2.0, 2.0)),
+            physics::hitbox::Hitbox::new(Vec3::new(1.0, 1.0, 1.0), Vec3::new(1.0, 1.0, 1.0)),
         ])),
     ]
 }
