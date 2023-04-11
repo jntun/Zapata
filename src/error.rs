@@ -1,5 +1,6 @@
 use std::{
     cell::BorrowMutError,
+    fmt::{Display, Formatter, Write},
     process::{ExitCode, Termination},
     time::SystemTimeError,
 };
@@ -30,6 +31,15 @@ impl Termination for ZapataResult {
 pub enum ZapataError {
     RuntimeError(String),
     FatalError(String),
+}
+
+impl Display for ZapataError {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::RuntimeError(msg) => f.write_str(format!("Runtime error: {}", msg).as_str()),
+            Self::FatalError(msg) => f.write_str(format!("Fatal error: {}", msg).as_str()),
+        }
+    }
 }
 
 impl From<SystemTimeError> for ZapataError {
