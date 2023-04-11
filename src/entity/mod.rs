@@ -1,6 +1,9 @@
 pub(crate) mod component;
 
-use std::fmt::{Debug, Display, Formatter};
+use std::{
+    fmt::{Debug, Display, Formatter},
+    ops::AddAssign,
+};
 
 #[derive(PartialEq, Eq, Copy, Clone)]
 pub struct Entity(pub usize);
@@ -29,5 +32,11 @@ impl Display for Entity {
 impl From<usize> for Entity {
     fn from(e: usize) -> Self {
         Self(e)
+    }
+}
+
+impl AddAssign<usize> for Entity {
+    fn add_assign(&mut self, rhs: usize) {
+        self.0 += rhs
     }
 }
