@@ -3,8 +3,13 @@ pub(crate) mod scene;
 pub(crate) mod tracked;
 
 use {
-    crate::{error::ZapataError, physics::effect::Effect, scene::tracked::TrackedComponent},
-    std::{result::Result, time, vec::Vec},
+    crate::{entity::ecs::ECS, error::ZapataError, physics::effect::Effect},
+    std::{
+        fmt::{Display, Formatter, Write},
+        result::Result,
+        time,
+        vec::Vec,
+    },
 };
 
 #[derive(Default, Debug)]
@@ -27,7 +32,8 @@ pub struct Scene {
     name: String,
     lifetime: Lifetime,
     pub physics_effects: Vec<Effect>,
-    entities: Vec<Vec<TrackedComponent>>,
+
+    pub ecs: ECS,
 }
 
 impl Lifetime {
@@ -56,12 +62,6 @@ impl Lifetime {
             last_tick_timestamp: time::Instant::now(),
             ticks: 0,
         }
-    }
-}
-
-impl Default for Lifetime {
-    fn default() -> Self {
-        Self::new()
     }
 }
 
@@ -102,5 +102,23 @@ impl SceneManager {
             lifetime: Lifetime::new(),
             running: false,
         }
+    }
+}
+
+impl Default for Lifetime {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+impl Display for SceneManager {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        let mut out: String = String::new();
+        for (i, scene) in self.scenes.iter().enumerate() {
+            if let Err(e) = out.write_fmt(format_args!("Scene {}: {:?}\n", i, scene.lifetime)) {
+                return f.write_str("Couldn't build SceneManager display string.");
+            }
+        }
+        f.write_str(out.as_str())
     }
 }

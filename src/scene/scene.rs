@@ -1,12 +1,13 @@
+use std::fmt::Pointer;
 use {
     crate::{
-        entity::Entity,
+        entity::ecs::ECS,
         error::ZapataError,
         physics::{
             effect::{Duration, Effect},
             vec3::Vec3,
         },
-        scene::{tracked::TrackedComponent, Scene},
+        scene::Scene,
     },
     std::{
         fmt::{Debug, Formatter},
@@ -22,13 +23,16 @@ impl Scene {
     }
 
     fn update_entities(&mut self) -> Result<(), ZapataError> {
-        for (i_as_e, comp_list) in self.entities.iter().enumerate() {
-            for comp in comp_list.iter() {
-                if let Err(e) = comp.update(Entity(i_as_e), self) {
-                    return Err(e);
-                }
-            }
-        }
+        if let Err(e) = self.ecs.physics.do_entity_updates(self) {
+            return Err(e);
+        };
+        if let Err(e) = self.ecs.collider.do_entity_updates(self) {
+            return Err(e);
+        };
+        if let Err(e) = self.ecs.health.do_entity_updates(self) {
+            return Err(e);
+        };
+
         Ok(())
     }
 
@@ -53,19 +57,6 @@ impl Scene {
 }
 
 impl Scene {
-    pub fn component_list_for_entity(&self, entity: Entity) -> Option<&Vec<TrackedComponent>> {
-        self.entities.get(entity.index())
-    }
-
-    pub fn entity_list_end(&self) -> Entity {
-        Entity::from(self.entities.len())
-    }
-
-    pub fn add_entity(&mut self, components: Vec<TrackedComponent>) -> Result<Entity, ZapataError> {
-        self.entities.push(components);
-        Ok(Entity(self.entities.len()))
-    }
-
     pub fn current_tick(&self) -> u64 {
         self.lifetime.ticks
     }
@@ -110,7 +101,7 @@ impl Debug for Scene {
             .field("runtime", &self.lifetime.total_tick_time)
             .field("avg_tick", &self.average_tick())
             .field("avg_∆tick", &self.average_delta_tick())
-            .field("entities", &self.entities.len())
+            .field("", &self.ecs)
             .finish()
     }
 }
@@ -125,7 +116,7 @@ impl Default for Scene {
                 Vec3::new(0.0, -9.821, 0.0),
                 Some(Duration::Indefinite),
             )],
-            entities: Vec::new(),
+            ecs: ECS::default(),
         }
     }
 }

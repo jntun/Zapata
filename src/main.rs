@@ -3,36 +3,43 @@ mod error;
 mod physics;
 mod scene;
 
-use crate::{
-    entity::*,
-    error::ZapataResult,
-    physics::vec3::Vec3,
-    scene::{tracked, Scene},
+use crate::scene::SceneManager;
+use {
+    crate::{
+        entity::*,
+        error::ZapataResult,
+        physics::vec3::Vec3,
+        scene::{tracked, Scene},
+    },
+    std::rc::Rc,
 };
-use std::{cell::RefCell, rc::Rc};
 
-const EPOCH_COUNT: usize = 1000;
-const HUMAN_COUNT: usize = 20;
+const EPOCH_COUNT: usize = 100;
+const HUMAN_COUNT: usize = 100;
 
-fn main() -> error::ZapataResult {
+fn main() -> ZapataResult {
     let mut scene = Scene::new(None);
-
     for i in 0..HUMAN_COUNT {
-        let pos = i as f64;
-        match scene.add_entity(scene::tracked::human(Some(Vec3::new(pos, pos, pos)))) {
-            Ok(e) => (), //println!("entity added {:?}", e),
+        match scene.ecs.create_human(Some(Vec3::new(i as f64, 0.0, 0.0))) {
+            Ok(e) => (),
             Err(e) => {
-                println!("failed adding entity: {:?}", e);
+                println!("Couldn't add human to scene: {}", e);
+                return ZapataResult::Fatal;
             }
         }
     }
 
-    match scene.run(EPOCH_COUNT) {
+    let mut manager = SceneManager::new(vec![scene]);
+
+    match manager.run(Some(EPOCH_COUNT)) {
         Ok(()) => {
-            print!("\nDone - Ran for {} ticks:\n\t", EPOCH_COUNT);
-            println!("{:?}", scene);
+            print!("\nDone - Ran for {} ticks:\n\t{}", EPOCH_COUNT, manager);
+            //println!("{:?}", manager);
             ZapataResult::Success
         }
-        Err(e) => ZapataResult::from(e),
+        Err(e) => {
+            eprintln!("{:?}", e);
+            ZapataResult::from(e)
+        }
     }
 }
