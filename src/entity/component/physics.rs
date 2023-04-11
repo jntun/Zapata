@@ -72,14 +72,6 @@ impl Component for Physics {
 
         Ok(())
     }
-
-    fn is_active(&self) -> bool {
-        self.on
-    }
-
-    fn get_name(&self) -> &str {
-        COMPONENT_NAME
-    }
 }
 
 impl Default for Physics {

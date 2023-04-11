@@ -11,14 +11,6 @@ impl Component for Printer {
         println!("{:?}", entity);
         Ok(())
     }
-
-    fn is_active(&self) -> bool {
-        self.0
-    }
-
-    fn get_name(&self) -> &str {
-        "Printer"
-    }
 }
 
 impl Printer {

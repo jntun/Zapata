@@ -5,11 +5,7 @@ use {
         error::ZapataError,
         scene::Scene,
     },
-    std::{
-        cell::{Cell, RefCell},
-        fmt::Debug,
-        rc::Rc,
-    },
+    std::{cell::Cell, fmt::Debug, rc::Rc},
 };
 
 pub(crate) type HealthUnit = i64;
@@ -21,7 +17,6 @@ pub struct DamageEntry {
     amount: i64,
     source: Entity,
     dest: Entity,
-    cause: Rc<Box<dyn Component>>,
 }
 
 pub struct Health {
@@ -33,7 +28,7 @@ pub struct Health {
 
 impl Debug for Health {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        f.debug_struct(self.get_name())
+        f.debug_struct(COMPONENT_NAME)
             .field("start", &self.start)
             .field("current", &self.current)
             .field("max", &self.max)
@@ -45,14 +40,6 @@ impl Debug for Health {
 impl Component for Health {
     fn update(&mut self, entity: Entity, scene: &Scene) -> Result<(), ZapataError> {
         Ok(())
-    }
-
-    fn is_active(&self) -> bool {
-        true
-    }
-
-    fn get_name(&self) -> &str {
-        COMPONENT_NAME
     }
 }
 

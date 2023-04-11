@@ -1,8 +1,10 @@
+use crate::physics::vec3::Vec3;
 use {
     crate::{
         entity::{component, component::Component, Entity},
         error::ZapataError,
         physics,
+        physics::hitbox::Hitbox,
         scene::{tracked, Scene},
     },
     std::{cell::RefCell, rc::Rc},
@@ -14,113 +16,73 @@ const COMPONENT_NAME: &str = "Collider";
 pub struct Collider(pub Vec<physics::hitbox::Hitbox>);
 
 impl Collider {
-    fn try_collide(
+    fn do_collide(
         &self,
-        self_physx: &Rc<RefCell<component::physics::Physics>>,
+        self_physx: component::physics::Physics,
         self_entity: Entity,
+        target_physx: component::physics::Physics,
+        target_collider: &Hitbox,
         entity: Entity,
-        scene: &Scene,
     ) -> Result<(), ZapataError> {
-        let comp_list = scene.component_list_for_entity(entity);
-
-        if let Some(comp_list) = comp_list {
-            let mut target_physx: Option<&Rc<RefCell<component::physics::Physics>>> = None;
-            let mut target_collider: Option<&Rc<RefCell<Collider>>> = None;
-
-            for component in comp_list.into_iter() {
-                match component {
-                    tracked::TrackedComponent::Collider(collider) => {
-                        target_collider = Some(collider)
-                    }
-                    tracked::TrackedComponent::Physics(physx) => target_physx = Some(physx),
-                    _ => (),
-                }
-            }
-
-            //println!("{} - {} - {:?}", self_entity, entity, self_physx);
-            match (target_collider, target_physx) {
-                (Some(target_collider), Some(target_physx)) => {
-                    for target_hitbox in target_collider.borrow_mut().0.iter() {
-                        for self_hitbox in self.0.iter() {
-                            if self_hitbox.intersects(
-                                self_physx.borrow().position(),
-                                target_physx.borrow().position(),
-                                target_hitbox,
-                            ) {
-                                println!(
-                                    "{}: {:?} intersected {:?} - {}",
-                                    COMPONENT_NAME,
-                                    self_entity,
-                                    entity,
-                                    scene.current_tick()
-                                )
-                            }
-                        }
-                    }
-                    return Ok(());
-                }
-                (None, Some(target_physx)) => {
-                    return Err(ZapataError::RuntimeError(format!(
-                        "{:?} did not have {} component",
-                        entity, COMPONENT_NAME
-                    )));
-                }
-                (Some(target_collider), None) => {
-                    return Err(ZapataError::RuntimeError(format!(
-                        "{:?} did not have {} component",
-                        entity,
-                        component::physics::COMPONENT_NAME
-                    )))
-                }
-                _ => {
-                    return Err(ZapataError::RuntimeError(format!(
-                        "{}: {:?} could not find matching components",
-                        entity, COMPONENT_NAME
-                    )))
-                }
-            }
-        }
-        Err(ZapataError::RuntimeError(format!("done.")))
-    }
-}
-
-// TODO: generic Component errors
-impl Component for Collider {
-    fn update(&mut self, self_entity: Entity, scene: &Scene) -> Result<(), ZapataError> {
-        if let Some(self_comp_list) = scene.component_list_for_entity(self_entity) {
-            for comp in self_comp_list.into_iter() {
-                match comp {
-                    tracked::TrackedComponent::Physics(physx) => {
-                        for index in 0..scene.entity_list_end().index() {
-                            let target_entity = Entity::from(index);
-                            if target_entity == self_entity {
-                                continue;
-                            }
-                            println!("{} doing loop {}", self_entity, target_entity);
-                            //println!("{:?} - {:?}", self_entity, target_entity);
-                            match self.try_collide(physx, self_entity, target_entity, scene) {
-                                Ok(()) => (),
-                                Err(e) => return Err(e),
-                            };
-                        }
-                    }
-                    _ => (),
-                }
-            }
-        } else {
-            return Err(ZapataError::RuntimeError(format!(
-                "{}-{}: couldn't get component list.",
-                COMPONENT_NAME, self_entity
-            )));
-        }
         Ok(())
     }
 
-    fn is_active(&self) -> bool {
-        true
+    fn try_collide(
+        self,
+        self_physx: component::physics::Physics,
+        self_entity: Entity,
+        target_entity: Entity,
+        target_physx: component::physics::Physics,
+        target_collider: Collider,
+    ) -> Result<(), ZapataError> {
+        //println!("{} - {} - {:?}", self_entity, entity, self_physx);
+        for target_hitbox in target_collider.0.into_iter() {
+            for self_hitbox in self.0.iter() {
+                if self_hitbox.intersects(
+                    &self_physx.position(),
+                    &target_physx.position(),
+                    &target_hitbox,
+                ) {
+                    println!(
+                        "{}: {:?} intersected {:?} ",
+                        COMPONENT_NAME, self_entity, target_entity,
+                    )
+                    /*
+                    match self.do_collide(
+                        self_physx,
+                        self_entity,
+                        target_physx,
+                        target_hitbox,
+                        target_entity,
+                    ) {
+                        Ok(()) => (),
+                        Err(e) => return Err(e),
+                    }
+                     */
+                }
+            }
+        }
+        return Ok(());
     }
 
-    fn get_name(&self) -> &str {
-        COMPONENT_NAME
+    pub fn human() -> Self {
+        return Self {
+            0: vec![Hitbox::new(
+                Vec3::new(1.0, 1.0, 1.0),
+                Vec3::new(1.0, 1.0, 1.0),
+            )],
+        };
+    }
+}
+
+impl Component for Collider {
+    fn update(&mut self, self_entity: Entity, scene: &Scene) -> Result<(), ZapataError> {
+        /* March 27, 2023
+        I think I want collision detection to happen all in 'one' loop instead of every update() call to a Collider component.
+            My thinking is that it will function better to have the scene do all collision detections, add them to a CollisionEvent queue for the
+            corresponding Collider components & then have the update() call to each Collider work through their respective queues
+            by applying the CollisionEvents properly.
+         */
+        Ok(())
     }
 }
