@@ -1,0 +1,160 @@
+pub mod types;
+
+use std::fmt::Write;
+use {
+    crate::{
+        entity::{
+            self,
+            component::{collider, health, physics, Component},
+            Entity,
+        },
+        error::ZapataError,
+        physics::{hitbox, vec3::Vec3},
+        scene::Scene,
+    },
+    std::{
+        fmt::{Debug, Display, Formatter},
+        marker::PhantomData,
+        sync::Mutex,
+    },
+};
+
+pub const DEFAULT_MAX_ENTITY: usize = 1000;
+
+struct OccupiedComponent<T>
+where
+    T: Component,
+{
+    component: T,
+    generation: entity::Generation,
+}
+
+enum ComponentEntry<T>
+where
+    T: Component,
+{
+    Occupied(OccupiedComponent<T>),
+    Free,
+}
+
+impl<T> ComponentEntry<T>
+where
+    T: Component,
+{
+    fn update(&mut self, self_entity: Entity) -> Result<(), ZapataError> {
+        match self {
+            ComponentEntry::Occupied(occupied) if occupied.generation == self_entity.generation => {
+                occupied.component.update(self_entity)
+            }
+            _ => Ok(()),
+        }
+    }
+}
+
+impl<T> Debug for ComponentEntry<T>
+where
+    T: Component + Debug,
+{
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        match self {
+            ComponentEntry::Occupied(occupied) => f
+                .write_fmt(format_args!(
+                    "\n@{}: {:?}",
+                    occupied.generation, occupied.component
+                ))
+                .expect("ComponentEntry debug string failed"),
+            ComponentEntry::Free => f
+                .write_str("None")
+                .expect("ComponentEntry is free but couldn't write debug string"),
+        }
+
+        f.write_str("")
+    }
+}
+
+// 4/13/23 TODO: I think in the future this should use a ComponentRegistry type system.
+//          My thinking is that with a registry system, all of the components wouldn't need to be allocated/present.
+//          For making one 'game' that might work out alright, but hypothetically if this engine were to ever grow &
+//          make multiple kinds of games/systems, then it might hurt having every type of Component that exists
+//          loaded/present during *every* runtime. However, the Registry needs to be essentially seamless for intertwining with the ECS.
+//          Ideally, all of the create_* fn's in ecs/types.rs return the same expected behavior as before. - Justin
+
+pub struct ECS {
+    max: entity::Index,
+    current_entity: entity::Index,
+    entities: Vec<Entity>,
+
+    physics: Vec<ComponentEntry<physics::Physics>>,
+    collider: Vec<ComponentEntry<collider::Collider>>,
+    health: Vec<ComponentEntry<health::Health>>,
+}
+
+impl ECS {
+    fn get_next_entity(&mut self) -> Result<Entity, ZapataError> {
+        if self.current_entity == self.max {
+            return Err(ZapataError::RuntimeError(format!(
+                "ECS is at max entities. Couldn't get next entity."
+            )));
+        }
+        /* TODO: In the future, we'll want to be able to periodically go through each ComponentEntry list &
+         *  find the Free entries. Adding them to a "free_queue" of some kind is a decent way to do it that I can
+         *  think of right now. */
+        let e = self.current_entity;
+
+        self.physics.push(ComponentEntry::Free);
+        self.collider.push(ComponentEntry::Free);
+        self.health.push(ComponentEntry::Free);
+
+        self.current_entity += 1;
+        Ok(Entity {
+            index: e,
+            generation: 0,
+        })
+    }
+
+    pub fn do_updates(&mut self) -> Result<(), ZapataError> {
+        for entity in &self.entities {
+            if let Some(physx) = self.physics.get_mut(entity.index) {
+                if let Err(e) = physx.update(entity.clone()) {
+                    return Err(e);
+                }
+            }
+
+            if let Some(collider) = self.collider.get_mut(entity.index) {
+                if let Err(e) = collider.update(entity.clone()) {
+                    return Err(e);
+                }
+            }
+        }
+        Ok(())
+    }
+}
+
+impl ECS {
+    pub fn new(max_entities: usize) -> Self {
+        Self {
+            max: max_entities,
+            current_entity: 0,
+            entities: Vec::new(),
+            physics: Vec::with_capacity(max_entities),
+            collider: Vec::with_capacity(max_entities),
+            health: Vec::with_capacity(max_entities),
+        }
+    }
+}
+
+impl Debug for ECS {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        for entity in &self.entities {
+            f.write_fmt(format_args!("E#{}@{}", entity.index, entity.generation))
+                .expect("ECS debug string failed");
+
+            let Some(physx) = self.physics.get(entity.index) else {
+                return Err(std::fmt::Error);
+            };
+            f.write_fmt(format_args!("{:?}", physx))
+                .expect(format!("ECS failed to debug physx for {}", entity).as_str());
+        }
+        f.write_str("done")
+    }
+}

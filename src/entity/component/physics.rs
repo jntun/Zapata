@@ -3,12 +3,9 @@ use {
         entity::{component::Component, Entity},
         error::ZapataError,
         physics::{effect::Effect, vec3::Vec3},
-        scene::Scene,
     },
     std::fmt::{Debug, Formatter},
 };
-
-pub const COMPONENT_NAME: &str = "Physics";
 
 #[derive(Clone)]
 pub struct Physics {
@@ -61,16 +58,16 @@ impl Physics {
 }
 
 impl Component for Physics {
-    fn update(&mut self, entity: Entity, scene: &Scene) -> Result<(), ZapataError> {
+    fn update(&mut self, entity: Entity) -> Result<(), ZapataError> {
         let mut force = self.effects_force_sum();
-        for scene_effect in scene.physics_effects.iter() {
-            force += scene_effect.get_force();
-        }
-
         self.momentum += force;
         self.position += self.momentum / self.mass;
 
         Ok(())
+    }
+
+    fn name(&self) -> &str {
+        "physx"
     }
 }
 

@@ -1,6 +1,5 @@
 pub(crate) mod ipc;
 pub(crate) mod scene;
-pub(crate) mod tracked;
 
 use {
     crate::{entity::ecs::ECS, error::ZapataError, physics::effect::Effect},
@@ -31,7 +30,7 @@ struct Lifetime {
 pub struct Scene {
     name: String,
     lifetime: Lifetime,
-    pub physics_effects: Vec<Effect>,
+    physics_effects: Vec<Effect>,
 
     pub ecs: ECS,
 }

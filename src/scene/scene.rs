@@ -1,7 +1,6 @@
-use std::fmt::Pointer;
 use {
     crate::{
-        entity::ecs::ECS,
+        entity::ecs,
         error::ZapataError,
         physics::{
             effect::{Duration, Effect},
@@ -23,17 +22,7 @@ impl Scene {
     }
 
     fn update_entities(&mut self) -> Result<(), ZapataError> {
-        if let Err(e) = self.ecs.physics.do_entity_updates(self) {
-            return Err(e);
-        };
-        if let Err(e) = self.ecs.collider.do_entity_updates(self) {
-            return Err(e);
-        };
-        if let Err(e) = self.ecs.health.do_entity_updates(self) {
-            return Err(e);
-        };
-
-        Ok(())
+        self.ecs.do_updates()
     }
 
     fn post_update(&mut self) -> Result<(), ZapataError> {
@@ -101,7 +90,7 @@ impl Debug for Scene {
             .field("runtime", &self.lifetime.total_tick_time)
             .field("avg_tick", &self.average_tick())
             .field("avg_∆tick", &self.average_delta_tick())
-            .field("", &self.ecs)
+            .field("ecs", &self.ecs)
             .finish()
     }
 }
@@ -116,7 +105,7 @@ impl Default for Scene {
                 Vec3::new(0.0, -9.821, 0.0),
                 Some(Duration::Indefinite),
             )],
-            ecs: ECS::default(),
+            ecs: ecs::ECS::new(ecs::DEFAULT_MAX_ENTITY),
         }
     }
 }

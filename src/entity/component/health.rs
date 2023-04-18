@@ -3,9 +3,8 @@ use {
     crate::{
         entity::{component::Component, Entity},
         error::ZapataError,
-        scene::Scene,
     },
-    std::{cell::Cell, fmt::Debug, rc::Rc},
+    std::{fmt::Debug, rc::Rc},
 };
 
 pub(crate) type HealthUnit = i64;
@@ -23,7 +22,7 @@ pub struct Health {
     start: HealthUnit,
     current: HealthUnit,
     max: HealthUnit,
-    damage_log: Vec<Cell<DamageEntry>>,
+    damage_log: Vec<DamageEntry>,
 }
 
 impl Debug for Health {
@@ -38,8 +37,12 @@ impl Debug for Health {
 }
 
 impl Component for Health {
-    fn update(&mut self, entity: Entity, scene: &Scene) -> Result<(), ZapataError> {
+    fn update(&mut self, entity: Entity) -> Result<(), ZapataError> {
         Ok(())
+    }
+
+    fn name(&self) -> &str {
+        "health"
     }
 }
 
@@ -59,11 +62,6 @@ impl Health {
                 damage_log: Vec::new(),
             },
         }
-    }
-
-    pub fn do_damage(&mut self, dmg: DamageEntry) {
-        self.current -= dmg.amount;
-        self.damage_log.push(Cell::new(dmg));
     }
 
     pub fn is_alive(&self) -> bool {

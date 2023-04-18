@@ -3,15 +3,10 @@ mod error;
 mod physics;
 mod scene;
 
-use crate::scene::SceneManager;
-use {
-    crate::{
-        entity::*,
-        error::ZapataResult,
-        physics::vec3::Vec3,
-        scene::{tracked, Scene},
-    },
-    std::rc::Rc,
+use crate::{
+    error::ZapataResult,
+    physics::vec3::Vec3,
+    scene::{Scene, SceneManager},
 };
 
 const EPOCH_COUNT: usize = 100;
@@ -33,7 +28,7 @@ fn main() -> ZapataResult {
 
     match manager.run(Some(EPOCH_COUNT)) {
         Ok(()) => {
-            print!("\nDone - Ran for {} ticks:\n\t{}", EPOCH_COUNT, manager);
+            print!("\nDone - Ran for {} ticks:\n\t{:?}", EPOCH_COUNT, manager);
             //println!("{:?}", manager);
             ZapataResult::Success
         }
