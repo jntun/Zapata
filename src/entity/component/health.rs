@@ -1,10 +1,13 @@
 use std::fmt::Formatter;
 use {
     crate::{
-        entity::{component::Component, Entity},
+        entity::{
+            component::{Component, Health},
+            Entity,
+        },
         error::ZapataError,
     },
-    std::{fmt::Debug, rc::Rc},
+    std::fmt::Debug,
 };
 
 pub(crate) type HealthUnit = i64;
@@ -16,13 +19,6 @@ pub struct DamageEntry {
     amount: i64,
     source: Entity,
     dest: Entity,
-}
-
-pub struct Health {
-    start: HealthUnit,
-    current: HealthUnit,
-    max: HealthUnit,
-    damage_log: Vec<DamageEntry>,
 }
 
 impl Debug for Health {

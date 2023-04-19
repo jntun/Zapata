@@ -1,20 +1,14 @@
 use {
     crate::{
-        entity::{component::Component, Entity},
+        entity::{
+            component::{Component, Physics},
+            Entity,
+        },
         error::ZapataError,
         physics::{effect::Effect, vec3::Vec3},
     },
     std::fmt::{Debug, Formatter},
 };
-
-#[derive(Clone)]
-pub struct Physics {
-    on: bool,
-    mass: f64,
-    momentum: Vec3,
-    position: Vec3,
-    effects: Vec<Effect>,
-}
 
 impl Physics {
     pub fn new(mass: f64, position: Option<Vec3>, start_on: Option<bool>) -> Self {

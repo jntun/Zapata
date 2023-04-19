@@ -1,25 +1,20 @@
 use crate::physics::vec3::Vec3;
-use {
-    crate::{
-        entity::{component, component::Component, Entity},
-        error::ZapataError,
-        physics::hitbox::Hitbox,
-        scene::Scene,
+use crate::{
+    entity::{
+        component,
+        component::{Collider, Component},
+        Entity,
     },
-    std::{cell::RefCell, rc::Rc},
+    error::ZapataError,
+    physics::hitbox::Hitbox,
 };
-
-#[derive(Debug)]
-pub struct Collider {
-    pub hitbox: Vec<Hitbox>,
-}
 
 impl Collider {
     fn do_collide(
         &self,
-        self_physx: component::physics::Physics,
+        self_physx: component::Physics,
         self_entity: Entity,
-        target_physx: component::physics::Physics,
+        target_physx: component::Physics,
         target_collider: &Hitbox,
         entity: Entity,
     ) -> Result<(), ZapataError> {
@@ -28,10 +23,10 @@ impl Collider {
 
     fn try_collide(
         self,
-        self_physx: component::physics::Physics,
+        self_physx: component::Physics,
         self_entity: Entity,
         target_entity: Entity,
-        target_physx: component::physics::Physics,
+        target_physx: component::Physics,
         target_collider: Collider,
     ) -> Result<(), ZapataError> {
         return Ok(());

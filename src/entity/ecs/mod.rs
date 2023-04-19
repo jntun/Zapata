@@ -1,11 +1,10 @@
 pub mod types;
 
-use std::fmt::Write;
 use {
     crate::{
         entity::{
             self,
-            component::{collider, health, physics, Component},
+            component::{self, health, physics, Component},
             Entity,
         },
         error::ZapataError,
@@ -150,9 +149,9 @@ pub struct ECS {
     current_entity: entity::Index,
     entities: Vec<Entity>,
 
-    physics: ComponentArray<physics::Physics>,
-    collider: ComponentArray<collider::Collider>,
-    health: ComponentArray<health::Health>,
+    physics: ComponentArray<component::Physics>,
+    collider: ComponentArray<component::Collider>,
+    health: ComponentArray<component::Health>,
 }
 
 impl ECS {

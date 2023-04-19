@@ -1,10 +1,10 @@
 use crate::{
-    entity::{component::Component, Entity},
+    entity::{
+        component::{Component, Printer},
+        Entity,
+    },
     error::ZapataError,
-    scene::Scene,
 };
-
-pub struct Printer(bool);
 
 impl Component for Printer {
     fn update(&mut self, entity: Entity) -> Result<(), ZapataError> {
