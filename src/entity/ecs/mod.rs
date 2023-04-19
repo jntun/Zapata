@@ -212,14 +212,26 @@ impl ECS {
 impl Debug for ECS {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         for entity in &self.entities {
+            f.write_str("\n")?;
             f.write_fmt(format_args!("E#{}@{}", entity.index, entity.generation))
                 .expect("ECS debug string failed");
 
-            let Some(physx) = self.physics.get(entity.index) else {
-                return Err(std::fmt::Error);
-            };
-            f.write_fmt(format_args!("{:?}", physx))
-                .expect(format!("ECS failed to debug physx for {}", entity).as_str());
+            if let Some(physx) = self.physics.get(entity) {
+                f.write_fmt(format_args!("\n{}: {:?}", physx.name(), physx))
+                    .expect(format!("ECS failed to debug physx for {}", entity).as_str());
+            }
+
+            if let Some(collider) = self.collider.get(entity) {
+                f.write_fmt(format_args!("\n{}: {:?}", collider.name(), collider))
+                    .expect(format!("ECS failed to debug collider for {}", entity).as_str())
+            }
+
+            if let Some(health) = self.health.get(entity) {
+                f.write_fmt(format_args!("\n{}: {:?}", health.name(), health))
+                    .expect(format!("ECS failed to debug health for {}", entity).as_str())
+            }
+
+            f.write_str("\n")?
         }
         f.write_str("done")
     }
