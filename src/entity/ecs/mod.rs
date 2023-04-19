@@ -72,6 +72,72 @@ where
     }
 }
 
+struct ComponentArray<T>
+where
+    T: Component,
+{
+    collection: Vec<ComponentEntry<T>>,
+}
+
+impl<T> ComponentArray<T>
+where
+    T: Component,
+{
+    pub fn get(&self, entity: &Entity) -> Option<&T> {
+        if let Some(entry) = self.collection.get(entity.index) {
+            match entry {
+                ComponentEntry::Occupied(occupied) if occupied.generation == entity.generation => {
+                    return Some(&occupied.component)
+                }
+                _ => (),
+            }
+        }
+        None
+    }
+
+    pub fn get_mut(&mut self, entity: &Entity) -> Option<&mut T> {
+        if let Some(entry) = self.collection.get_mut(entity.index) {
+            match entry {
+                ComponentEntry::Occupied(occupied) if occupied.generation == entity.generation => {
+                    return Some(&mut occupied.component);
+                }
+                _ => (),
+            }
+        }
+        None
+    }
+
+    pub fn fill_new_entity(
+        &mut self,
+        entity: &Entity,
+        component: T,
+    ) -> Result<ComponentEntry<T>, ZapataError> {
+        if let Some(entry) = self.collection.get(entity.index) {
+            match entry {
+                ComponentEntry::Occupied(occupied) if occupied.generation > entity.generation => return Err(ZapataError::RuntimeError(format!("[{}]Component @ {} being replaced by {:?} is now filled with higher generation entry.", component.name(), entity.index, entity))),
+                _ => (),
+            }
+        }
+        Ok(std::mem::replace(
+            &mut self.collection[entity.index],
+            ComponentEntry::Occupied(OccupiedComponent {
+                generation: entity.generation,
+                component,
+            }),
+        ))
+    }
+
+    pub fn push(&mut self, entry: ComponentEntry<T>) {
+        self.collection.push(entry)
+    }
+
+    pub fn new(capacity: usize) -> Self {
+        Self {
+            collection: Vec::with_capacity(capacity),
+        }
+    }
+}
+
 // 4/13/23 TODO: I think in the future this should use a ComponentRegistry type system.
 //          My thinking is that with a registry system, all of the components wouldn't need to be allocated/present.
 //          For making one 'game' that might work out alright, but hypothetically if this engine were to ever grow &
@@ -84,9 +150,9 @@ pub struct ECS {
     current_entity: entity::Index,
     entities: Vec<Entity>,
 
-    physics: Vec<ComponentEntry<physics::Physics>>,
-    collider: Vec<ComponentEntry<collider::Collider>>,
-    health: Vec<ComponentEntry<health::Health>>,
+    physics: ComponentArray<physics::Physics>,
+    collider: ComponentArray<collider::Collider>,
+    health: ComponentArray<health::Health>,
 }
 
 impl ECS {
@@ -114,13 +180,13 @@ impl ECS {
 
     pub fn do_updates(&mut self) -> Result<(), ZapataError> {
         for entity in &self.entities {
-            if let Some(physx) = self.physics.get_mut(entity.index) {
+            if let Some(physx) = self.physics.get_mut(entity) {
                 if let Err(e) = physx.update(entity.clone()) {
                     return Err(e);
                 }
             }
 
-            if let Some(collider) = self.collider.get_mut(entity.index) {
+            if let Some(collider) = self.collider.get_mut(entity) {
                 if let Err(e) = collider.update(entity.clone()) {
                     return Err(e);
                 }
@@ -136,9 +202,9 @@ impl ECS {
             max: max_entities,
             current_entity: 0,
             entities: Vec::new(),
-            physics: Vec::with_capacity(max_entities),
-            collider: Vec::with_capacity(max_entities),
-            health: Vec::with_capacity(max_entities),
+            physics: ComponentArray::new(max_entities),
+            collider: ComponentArray::new(max_entities),
+            health: ComponentArray::new(max_entities),
         }
     }
 }

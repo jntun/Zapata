@@ -1,14 +1,8 @@
 use crate::{
-    entity::{
-        component::{collider, health, physics},
-        ecs::ECS,
-        ecs::{ComponentEntry, OccupiedComponent},
-        Entity,
-    },
+    entity::{ecs::ECS, Entity},
     error::ZapataError,
     physics::vec3::Vec3,
 };
-use std::ops::Index;
 
 // Where "types" of entities are constructed & then returned to use
 
@@ -20,29 +14,26 @@ impl ECS {
             Err(e) => return Err(e),
         }
 
-        self.physics.insert(
-            human.index,
-            ComponentEntry::Occupied(OccupiedComponent {
-                component: physics::Physics::new(21.0, pos, None),
-                generation: human.generation,
-            }),
-        );
+        if let Err(e) = self.physics.fill_new_entity(
+            &human,
+            crate::entity::component::physics::Physics::new(21.0, pos, None),
+        ) {
+            return Err(e);
+        }
 
-        self.collider.insert(
-            human.index,
-            ComponentEntry::Occupied(OccupiedComponent {
-                generation: human.generation,
-                component: collider::Collider::human(),
-            }),
-        );
+        if let Err(e) = self.collider.fill_new_entity(
+            &human,
+            crate::entity::component::collider::Collider::human(),
+        ) {
+            return Err(e);
+        }
 
-        self.health.insert(
-            human.index,
-            ComponentEntry::Occupied(OccupiedComponent {
-                generation: human.generation,
-                component: health::Health::new(100, Some(75)),
-            }),
-        );
+        if let Err(e) = self.health.fill_new_entity(
+            &human,
+            crate::entity::component::health::Health::new(100, Some(75)),
+        ) {
+            return Err(e);
+        }
 
         self.entities.push(human);
         Ok(human)
