@@ -2,10 +2,7 @@ use {
     crate::{
         entity::ecs,
         error::ZapataError,
-        physics::{
-            effect::{Duration, Effect},
-            vec3::Vec3,
-        },
+        physics::{effect::Duration, Effect, Vec3},
         scene::Scene,
     },
     std::{

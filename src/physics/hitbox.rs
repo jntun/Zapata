@@ -1,10 +1,4 @@
-use crate::physics::vec3::Vec3;
-
-#[derive(Debug)]
-pub struct Hitbox {
-    min: Vec3,
-    max: Vec3,
-}
+use crate::physics::{Hitbox, Vec3};
 
 impl Hitbox {
     pub fn intersects(&self, self_pos: Vec3, target_pos: Vec3, target_hitbox: &Self) -> bool {

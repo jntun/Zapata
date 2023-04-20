@@ -2,9 +2,9 @@ pub(crate) mod ipc;
 pub(crate) mod scene;
 
 use {
-    crate::{entity::ecs::ECS, error::ZapataError, physics::effect::Effect},
+    crate::{entity::ecs::ECS, error::ZapataError, physics::Effect},
     std::{
-        fmt::{Display, Formatter, Write},
+        fmt::{Display, Formatter},
         result::Result,
         time,
         vec::Vec,

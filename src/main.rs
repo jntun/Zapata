@@ -5,7 +5,6 @@ mod scene;
 
 use crate::{
     error::ZapataResult,
-    physics::vec3::Vec3,
     scene::{Scene, SceneManager},
 };
 
@@ -15,7 +14,10 @@ const HUMAN_COUNT: usize = 100;
 fn main() -> ZapataResult {
     let mut scene = Scene::new(None);
     for i in 0..HUMAN_COUNT {
-        match scene.ecs.create_human(Some(Vec3::new(i as f64, 0.0, 0.0))) {
+        match scene
+            .ecs
+            .create_human(Some(physics::Vec3::new(i as f64, 0.0, 0.0)))
+        {
             Ok(e) => (),
             Err(e) => {
                 println!("Couldn't add human to scene: {}", e);

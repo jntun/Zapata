@@ -8,7 +8,7 @@ use {
             Entity,
         },
         error::ZapataError,
-        physics::{hitbox, vec3::Vec3},
+        physics::{hitbox, Vec3},
         scene::Scene,
     },
     std::{

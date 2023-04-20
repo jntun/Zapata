@@ -5,7 +5,7 @@ use {
             Entity,
         },
         error::ZapataError,
-        physics::{effect::Effect, vec3::Vec3},
+        physics::{Effect, Vec3},
     },
     std::fmt::{Debug, Formatter},
 };

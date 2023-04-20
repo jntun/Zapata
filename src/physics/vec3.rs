@@ -1,7 +1,5 @@
+use super::Vec3;
 use std::ops::*;
-
-#[derive(Debug, Copy, Clone)]
-pub struct Vec3(f64, f64, f64);
 
 impl Vec3 {
     pub fn x(&self) -> f64 {

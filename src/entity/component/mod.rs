@@ -6,7 +6,7 @@ pub(crate) mod printer;
 use crate::{
     entity::Entity,
     error::ZapataError,
-    physics::{effect, hitbox, vec3::Vec3},
+    physics::{Effect, Hitbox, Vec3},
 };
 
 pub trait Component {
@@ -17,7 +17,7 @@ pub trait Component {
 
 #[derive(Debug)]
 pub struct Collider {
-    pub hitbox: Vec<hitbox::Hitbox>,
+    pub hitbox: Vec<Hitbox>,
 }
 
 pub struct Health {
@@ -33,7 +33,7 @@ pub struct Physics {
     mass: f64,
     momentum: Vec3,
     position: Vec3,
-    effects: Vec<effect::Effect>,
+    effects: Vec<Effect>,
 }
 
 pub struct Printer(bool);

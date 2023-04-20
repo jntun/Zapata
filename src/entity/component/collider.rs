@@ -1,4 +1,3 @@
-use crate::physics::vec3::Vec3;
 use crate::{
     entity::{
         component,
@@ -6,7 +5,7 @@ use crate::{
         Entity,
     },
     error::ZapataError,
-    physics::hitbox::Hitbox,
+    physics::{Hitbox, Vec3},
 };
 
 impl Collider {

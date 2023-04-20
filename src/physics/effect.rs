@@ -1,13 +1,9 @@
-use {
-    crate::physics::vec3::Vec3,
-    std::fmt::{Debug},
-};
+use crate::physics::{Effect, Vec3};
 
-#[derive(Debug, Clone)]
-pub struct Effect {
-    name: String,
-    force: Vec3,
-    duration: Duration,
+#[derive(Copy, Clone, Debug)]
+pub enum Duration {
+    Indefinite,
+    EndTick(u64),
 }
 
 impl Effect {
@@ -37,10 +33,4 @@ impl Effect {
             }
         }
     }
-}
-
-#[derive(Copy, Clone, Debug)]
-pub enum Duration {
-    Indefinite,
-    EndTick(u64),
 }
