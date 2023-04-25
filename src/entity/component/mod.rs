@@ -15,11 +15,12 @@ pub trait Component {
     fn name(&self) -> &str;
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Collider {
     pub hitbox: Vec<Hitbox>,
 }
 
+#[derive(Clone)]
 pub struct Health {
     start: health::HealthUnit,
     current: health::HealthUnit,

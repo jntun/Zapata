@@ -5,7 +5,7 @@ pub(crate) mod vec3;
 #[derive(Debug, Copy, Clone)]
 pub struct Vec3(f64, f64, f64);
 
-#[derive(Debug)]
+#[derive(Debug, Copy, Clone)]
 pub struct Hitbox {
     min: Vec3,
     max: Vec3,

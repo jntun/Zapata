@@ -6,7 +6,7 @@ use std::fmt::{Debug, Display, Formatter};
 pub type Index = usize;
 pub type Generation = u64;
 
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Eq, PartialEq)]
 pub struct Entity {
     pub index: Index,
     pub generation: Generation,

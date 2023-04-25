@@ -14,7 +14,7 @@ pub(crate) type HealthUnit = i64;
 
 const COMPONENT_NAME: &str = "Health";
 
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy)]
 pub struct DamageEntry {
     amount: i64,
     source: Entity,
