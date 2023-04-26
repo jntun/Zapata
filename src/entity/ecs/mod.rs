@@ -14,11 +14,30 @@ use {
     std::{
         fmt::{Debug, Display, Formatter},
         marker::PhantomData,
+        slice::Iter,
         sync::Mutex,
     },
 };
 
 pub const DEFAULT_MAX_ENTITY: usize = 1000;
+
+pub struct EntityList {
+    entities: Vec<Entity>,
+}
+
+impl EntityList {
+    pub fn get(&self, entity: &Entity) -> Option<&Entity> {
+        self.entities.iter().find(|e| *e == entity)
+    }
+
+    pub fn iter(&self) -> Iter<'_, Entity> {
+        self.entities.iter()
+    }
+
+    fn push(&mut self, e: Entity) {
+        self.entities.push(e)
+    }
+}
 
 struct OccupiedComponent<T>
 where
@@ -71,7 +90,7 @@ where
     }
 }
 
-struct ComponentArray<T>
+pub struct ComponentArray<T>
 where
     T: Component,
 {
@@ -106,7 +125,7 @@ where
         None
     }
 
-    pub fn fill_new_entity(
+    fn fill_new_entity(
         &mut self,
         entity: &Entity,
         component: T,
@@ -126,7 +145,7 @@ where
         ))
     }
 
-    pub fn push(&mut self, entry: ComponentEntry<T>) {
+    fn push(&mut self, entry: ComponentEntry<T>) {
         self.collection.push(entry)
     }
 
@@ -147,11 +166,11 @@ where
 pub struct ECS {
     max: entity::Index,
     current_entity: entity::Index,
-    entities: Vec<Entity>,
+    pub entities: EntityList,
 
-    physics: ComponentArray<component::Physics>,
-    collider: ComponentArray<component::Collider>,
-    health: ComponentArray<component::Health>,
+    pub physics: ComponentArray<component::Physics>,
+    pub collider: ComponentArray<component::Collider>,
+    pub health: ComponentArray<component::Health>,
 }
 
 impl ECS {
@@ -178,7 +197,7 @@ impl ECS {
     }
 
     pub fn do_updates(&mut self) -> Result<(), ZapataError> {
-        for entity in &self.entities {
+        for entity in self.entities.iter() {
             if let Some(physx) = self.physics.get_mut(entity) {
                 if let Err(e) = physx.update(entity.clone()) {
                     return Err(e);
@@ -200,7 +219,9 @@ impl ECS {
         Self {
             max: max_entities,
             current_entity: 0,
-            entities: Vec::new(),
+            entities: EntityList {
+                entities: Vec::with_capacity(max_entities),
+            },
             physics: ComponentArray::new(max_entities),
             collider: ComponentArray::new(max_entities),
             health: ComponentArray::new(max_entities),
@@ -210,7 +231,7 @@ impl ECS {
 
 impl Debug for ECS {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        for entity in &self.entities {
+        for entity in self.entities.iter() {
             f.write_str("\n")?;
             f.write_fmt(format_args!("E#{}@{}", entity.index, entity.generation))
                 .expect("ECS debug string failed");
