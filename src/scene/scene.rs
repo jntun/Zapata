@@ -19,6 +19,10 @@ impl Scene {
     }
 
     fn update_entities(&mut self) -> Result<(), ZapataError> {
+        if let Err(e) = self.ecs.do_physx_effects(&self.physics_effects) {
+            return Err(e);
+        }
+
         self.ecs.do_updates()
     }
 

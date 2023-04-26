@@ -1,5 +1,6 @@
 pub(crate) mod component;
 pub(crate) mod ecs;
+pub(crate) mod systems;
 
 use std::fmt::{Debug, Display, Formatter};
 

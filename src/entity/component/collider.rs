@@ -5,30 +5,22 @@ use crate::{
         Entity,
     },
     error::ZapataError,
-    physics::{Hitbox, Vec3},
+    physics::{Effect, Hitbox, Vec3},
 };
 
 impl Collider {
-    fn do_collide(
+    pub fn collide_with(
         &self,
-        self_physx: component::Physics,
-        self_entity: Entity,
-        target_physx: component::Physics,
-        target_collider: &Hitbox,
-        entity: Entity,
-    ) -> Result<(), ZapataError> {
-        Ok(())
-    }
-
-    fn try_collide(
-        self,
-        self_physx: component::Physics,
-        self_entity: Entity,
-        target_entity: Entity,
-        target_physx: component::Physics,
-        target_collider: Collider,
-    ) -> Result<(), ZapataError> {
-        return Ok(());
+        target: &Collider,
+        self_pos: Vec3,
+        target_pos: Vec3,
+    ) -> Result<Vec<Effect>, ZapataError> {
+        for self_hitbox in self.hitbox.iter() {
+            for target_hitbox in target.hitbox.iter() {
+                if self_hitbox.intersects(self_pos, target_pos, target_hitbox) {}
+            }
+        }
+        Ok(vec![])
     }
 
     pub fn human() -> Self {
