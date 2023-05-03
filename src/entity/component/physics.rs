@@ -11,21 +11,17 @@ use {
 };
 
 impl Physics {
-    pub fn new(mass: f64, position: Option<Vec3>, start_on: Option<bool>) -> Self {
-        let mut on = true;
-        if let Some(o) = start_on {
-            on = o;
-        }
+    pub fn new(mass: f64, position: Option<Vec3>, start_on: bool) -> Self {
         match position {
             Some(position) => Self {
-                on,
+                on: start_on,
                 mass,
                 momentum: Vec3::new(0.0, 0.0, 0.0),
                 position,
                 effects: Vec::new(),
             },
             None => Self {
-                on,
+                on: start_on,
                 mass,
                 momentum: Vec3::new(0.0, 0.0, 0.0),
                 position: Vec3::new(0.0, 0.0, 0.0),
@@ -56,7 +52,7 @@ impl Component for Physics {
         let mut force = self.effects_force_sum();
         self.momentum += force;
         self.position += self.momentum / self.mass;
-
+        self.effects.clear();
         Ok(())
     }
 

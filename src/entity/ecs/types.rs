@@ -4,6 +4,14 @@ use crate::{
     physics::Vec3,
 };
 
+macro_rules! fill_new_entity_or_err {
+    ($e:ident, $comp_arr:expr, $comp:expr) => {
+        if let Err(e) = $comp_arr.fill_new_entity(&$e, $comp) {
+            return Err(e);
+        }
+    };
+}
+
 // Where "types" of entities are constructed & then returned to use
 
 impl ECS {
@@ -14,26 +22,13 @@ impl ECS {
             Err(e) => return Err(e),
         }
 
-        if let Err(e) = self
-            .physics
-            .fill_new_entity(&human, component::Physics::new(21.0, pos, None))
-        {
-            return Err(e);
-        }
-
-        if let Err(e) = self
-            .collider
-            .fill_new_entity(&human, component::Collider::human())
-        {
-            return Err(e);
-        }
-
-        if let Err(e) = self
-            .health
-            .fill_new_entity(&human, component::Health::new(100, Some(75)))
-        {
-            return Err(e);
-        }
+        fill_new_entity_or_err!(
+            human,
+            self.physics,
+            component::Physics::new(21.0, pos, true)
+        );
+        fill_new_entity_or_err!(human, self.collider, component::Collider::human());
+        fill_new_entity_or_err!(human, self.health, component::Health::new(100, Some(75)));
 
         self.entities.push(human);
         Ok(human)
