@@ -30,6 +30,10 @@ impl Scene {
         Ok(())
     }
 
+    pub fn physx_effects(&self) -> &Vec<Effect> {
+        &self.physics_effects
+    }
+
     pub fn update(&mut self) -> Result<(), ZapataError> {
         self.lifetime.start();
         if let Err(e) = self.pre_update() {
