@@ -14,8 +14,8 @@ use {
 #[derive(Default, Debug)]
 pub struct SceneManager {
     running: bool,
-    scenes: Vec<Scene>,
     lifetime: Lifetime,
+    scenes: Vec<Scene>,
 }
 
 #[derive(Debug)]
@@ -113,7 +113,12 @@ impl Default for Lifetime {
 impl Display for SceneManager {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         for (i, scene) in self.scenes.iter().enumerate() {
-            if let Err(e) = f.write_fmt(format_args!("Scene {}: {:?}\n", i, scene.lifetime)) {
+            if let Err(e) = f.write_fmt(format_args!(
+                "Scene {}: {:?} | avg: {:?}\n",
+                i,
+                scene.lifetime,
+                scene.average_tick()
+            )) {
                 return f.write_str("Couldn't build SceneManager display string.");
             }
         }
