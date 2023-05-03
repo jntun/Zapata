@@ -1,6 +1,9 @@
 use {
     crate::{
-        entity::ecs,
+        entity::{
+            ecs,
+            systems::{self, System},
+        },
         error::ZapataError,
         physics::{effect::Duration, Effect, Vec3},
         scene::Scene,
@@ -19,7 +22,7 @@ impl Scene {
     }
 
     fn update_entities(&mut self) -> Result<(), ZapataError> {
-        if let Err(e) = self.ecs.do_physx_effects(&self.physics_effects) {
+        if let Err(e) = systems::Physics().run_system(self) {
             return Err(e);
         }
 
