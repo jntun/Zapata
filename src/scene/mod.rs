@@ -2,7 +2,11 @@ pub(crate) mod ipc;
 pub(crate) mod scene;
 
 use {
-    crate::{entity::ecs::ECS, error::ZapataError, physics::Effect},
+    crate::{
+        entity::{self, ecs::ECS},
+        error::ZapataError,
+        physics::Effect,
+    },
     std::{
         fmt::{Display, Formatter},
         result::Result,
@@ -11,11 +15,17 @@ use {
     },
 };
 
+#[derive(Debug)]
+pub struct ManagedScene {
+    data: Scene,
+    systems: entity::systems::Registry,
+}
+
 #[derive(Default, Debug)]
 pub struct SceneManager {
     running: bool,
     lifetime: Lifetime,
-    scenes: Vec<Scene>,
+    scenes: Vec<ManagedScene>,
 }
 
 #[derive(Debug)]
@@ -65,7 +75,7 @@ impl Lifetime {
 }
 
 impl SceneManager {
-    pub fn add_scene(&mut self, scene: Scene) {
+    pub fn add_scene(&mut self, scene: ManagedScene) {
         self.scenes.push(scene);
     }
 
@@ -81,7 +91,10 @@ impl SceneManager {
             }
 
             for scene in self.scenes.iter_mut() {
-                if let Err(e) = scene.update() {
+                if let Err(e) = scene.systems.run_systems(&mut scene.data) {
+                    return Err(e);
+                }
+                if let Err(e) = scene.data.update() {
                     return Err(e);
                 }
             }
@@ -95,12 +108,18 @@ impl SceneManager {
         self.running = false;
     }
 
-    pub fn new(scenes: Vec<Scene>) -> Self {
+    pub fn new(scenes: Vec<ManagedScene>) -> Self {
         Self {
             scenes,
             lifetime: Lifetime::new(),
             running: false,
         }
+    }
+}
+
+impl ManagedScene {
+    pub fn new(data: Scene, systems: entity::systems::Registry) -> Self {
+        Self { data, systems }
     }
 }
 
@@ -116,8 +135,8 @@ impl Display for SceneManager {
             if let Err(e) = f.write_fmt(format_args!(
                 "Scene {}: {:?} | avg: {:?}\n",
                 i,
-                scene.lifetime,
-                scene.average_tick()
+                scene.data.lifetime,
+                scene.data.average_tick()
             )) {
                 return f.write_str("Couldn't build SceneManager display string.");
             }

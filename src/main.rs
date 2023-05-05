@@ -5,7 +5,7 @@ mod scene;
 
 use crate::{
     error::ZapataResult,
-    scene::{Scene, SceneManager},
+    scene::{ManagedScene, Scene, SceneManager},
 };
 
 const EPOCH_COUNT: usize = 100;
@@ -25,8 +25,10 @@ fn main() -> ZapataResult {
             }
         }
     }
-
-    let mut manager = SceneManager::new(vec![scene]);
+    let mut manager = SceneManager::new(vec![ManagedScene::new(
+        scene,
+        entity::systems::Registry::new().enable_physics().done(),
+    )]);
 
     match manager.run(Some(EPOCH_COUNT)) {
         Ok(()) => {
