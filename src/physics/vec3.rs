@@ -14,6 +14,15 @@ impl Vec3 {
     pub fn xyz(&self) -> (f64, f64, f64) {
         (self.x(), self.y(), self.z())
     }
+    pub fn x_mut(&mut self) -> &mut f64 {
+        &mut self.0
+    }
+    pub fn y_mut(&mut self) -> &mut f64 {
+        &mut self.1
+    }
+    pub fn z_mut(&mut self) -> &mut f64 {
+        &mut self.2
+    }
 
     pub fn new(x: f64, y: f64, z: f64) -> Self {
         Self(x, y, z)
@@ -78,6 +87,14 @@ impl AddAssign<Vec3> for Vec3 {
         self.0 += rhs.x();
         self.1 += rhs.y();
         self.2 += rhs.z();
+    }
+}
+
+impl AddAssign<&Vec3> for Vec3 {
+    fn add_assign(&mut self, rhs: &Vec3) {
+        self.0 += rhs.0;
+        self.1 += rhs.1;
+        self.2 += rhs.2;
     }
 }
 
