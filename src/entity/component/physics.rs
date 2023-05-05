@@ -34,6 +34,10 @@ impl Physics {
         self.effects.push(effect);
     }
 
+    pub fn append_effects(&mut self, effects: &mut Vec<Effect>) {
+        self.effects.append(effects)
+    }
+
     pub fn effects_force_sum(&self) -> Vec3 {
         let mut total = Vec3::default();
         for effect in self.effects.iter() {
