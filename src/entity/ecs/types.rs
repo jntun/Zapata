@@ -16,11 +16,10 @@ macro_rules! fill_new_entity_or_err {
 
 impl ECS {
     pub fn create_human(&mut self, pos: Option<Vec3>) -> Result<Entity, ZapataError> {
-        let human: Entity;
-        match self.get_next_entity() {
-            Ok(entity) => human = entity,
+        let human = match self.get_next_entity() {
+            Ok(entity) => entity,
             Err(e) => return Err(e),
-        }
+        };
 
         fill_new_entity_or_err!(
             human,
