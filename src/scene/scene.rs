@@ -2,7 +2,7 @@ use {
     crate::{
         entity::ecs,
         error::ZapataError,
-        physics::{effect::Duration, Effect, Vec3},
+        physics::{self, Vec3},
         scene::Scene,
     },
     std::{
@@ -26,7 +26,7 @@ impl Scene {
         Ok(())
     }
 
-    pub fn physx_effects(&self) -> &Vec<Effect> {
+    pub fn physx_effects(&self) -> &Vec<physics::Effect> {
         &self.physics_effects
     }
 
@@ -101,11 +101,7 @@ impl Default for Scene {
         Self {
             name: String::from(DEFAULT_NAME),
             lifetime: super::Lifetime::default(),
-            physics_effects: vec![Effect::new(
-                String::from("Gravity"),
-                Vec3::new(0.0, -9.821, 0.0),
-                Some(Duration::Indefinite),
-            )],
+            physics_effects: vec![physics::Effect::new(Vec3::new(0.0, -9.821, 0.0))],
             ecs: ecs::ECS::new(ecs::DEFAULT_MAX_ENTITY),
         }
     }

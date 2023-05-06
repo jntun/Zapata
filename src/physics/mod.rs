@@ -13,7 +13,5 @@ pub struct Hitbox {
 
 #[derive(Debug, Clone)]
 pub struct Effect {
-    name: String,
     force: Vec3,
-    duration: effect::Duration,
 }

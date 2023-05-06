@@ -41,7 +41,7 @@ impl Physics {
     pub fn effects_force_sum(&self) -> Vec3 {
         let mut total = Vec3::default();
         for effect in self.effects.iter() {
-            total += effect.get_force();
+            total += effect.force();
         }
         total
     }
