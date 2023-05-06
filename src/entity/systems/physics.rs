@@ -25,7 +25,7 @@ impl System for Physics {
 }
 
 fn do_physx_collider_entity_effects(ecs: &mut ECS) -> Result<(), ZapataError> {
-    for (i, self_entity) in ecs.entities.iter().enumerate() {
+    for self_entity in ecs.entities.iter() {
         let self_collider: &component::Collider;
         let self_physx: &component::Physics;
 

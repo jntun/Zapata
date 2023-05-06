@@ -1,11 +1,6 @@
 mod physics;
 
-use crate::{
-    entity::{component, ecs::ECS},
-    error::ZapataError,
-    physics::Effect,
-    scene::Scene,
-};
+use crate::{error::ZapataError, scene::Scene};
 
 pub struct RegistryBuilder {
     reg: Registry,
