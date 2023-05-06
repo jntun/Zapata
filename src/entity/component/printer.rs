@@ -7,7 +7,7 @@ use crate::{
 };
 
 impl Component for Printer {
-    fn update(&mut self, entity: Entity) -> Result<(), ZapataError> {
+    fn update(&mut self, entity: &Entity) -> Result<(), ZapataError> {
         println!("{:?}", entity);
         Ok(())
     }

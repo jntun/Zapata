@@ -34,7 +34,7 @@ impl Collider {
 }
 
 impl Component for Collider {
-    fn update(&mut self, self_entity: Entity) -> Result<(), ZapataError> {
+    fn update(&mut self, self_entity: &Entity) -> Result<(), ZapataError> {
         /* March 27, 2023
         I think I want collision detection to happen all in 'one' loop instead of every update() call to a Collider component.
             My thinking is that it will function better to have the scene do all collision detections, add them to a CollisionEvent queue for the

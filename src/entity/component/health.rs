@@ -33,7 +33,7 @@ impl Debug for Health {
 }
 
 impl Component for Health {
-    fn update(&mut self, entity: Entity) -> Result<(), ZapataError> {
+    fn update(&mut self, entity: &Entity) -> Result<(), ZapataError> {
         Ok(())
     }
 

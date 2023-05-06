@@ -52,7 +52,7 @@ impl Physics {
 }
 
 impl Component for Physics {
-    fn update(&mut self, entity: Entity) -> Result<(), ZapataError> {
+    fn update(&mut self, entity: &Entity) -> Result<(), ZapataError> {
         let mut force = self.effects_force_sum();
         self.momentum += force;
         self.position += self.momentum / self.mass;

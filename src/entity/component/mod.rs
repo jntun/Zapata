@@ -10,7 +10,7 @@ use crate::{
 };
 
 pub trait Component {
-    fn update(&mut self, self_entity: Entity) -> Result<(), ZapataError>;
+    fn update(&mut self, self_entity: &Entity) -> Result<(), ZapataError>;
 
     fn name(&self) -> &str;
 }

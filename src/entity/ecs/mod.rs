@@ -59,7 +59,7 @@ impl<T> ComponentEntry<T>
 where
     T: Component,
 {
-    fn update(&mut self, self_entity: Entity) -> Result<(), ZapataError> {
+    fn update(&mut self, self_entity: &Entity) -> Result<(), ZapataError> {
         match self {
             ComponentEntry::Occupied(occupied) if occupied.generation == self_entity.generation => {
                 occupied.component.update(self_entity)
@@ -199,13 +199,13 @@ impl ECS {
     pub fn do_updates(&mut self) -> Result<(), ZapataError> {
         for entity in self.entities.iter() {
             if let Some(physx) = self.physics.get_mut(entity) {
-                if let Err(e) = physx.update(entity.clone()) {
+                if let Err(e) = physx.update(entity) {
                     return Err(e);
                 }
             }
 
             if let Some(collider) = self.collider.get_mut(entity) {
-                if let Err(e) = collider.update(entity.clone()) {
+                if let Err(e) = collider.update(entity) {
                     return Err(e);
                 }
             }
