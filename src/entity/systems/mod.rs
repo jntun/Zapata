@@ -60,9 +60,7 @@ impl System for Physics {
         let physx_effs = scene.physx_effects().clone();
         for entity in scene.ecs.entities.iter() {
             if let Some(physx) = scene.ecs.physics.get_mut(entity) {
-                for effect in physx_effs.iter() {
-                    physx.add_effect(effect.clone())
-                }
+                physx.append_effects(&mut physx_effs.clone())
             }
         }
         Ok(())
