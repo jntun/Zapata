@@ -1,6 +1,7 @@
 use crate::{
     entity::{component, ecs::ECS, Entity},
     error::ZapataError,
+    kit,
     physics::Vec3,
 };
 
@@ -15,7 +16,11 @@ macro_rules! fill_new_entity_or_err {
 // Where "types" of entities are constructed & then returned to use
 
 impl ECS {
-    pub fn create_human(&mut self, pos: Option<Vec3>) -> Result<Entity, ZapataError> {
+    pub fn create_human(
+        &mut self,
+        pos: Option<Vec3>,
+        heading: Option<kit::Float2>,
+    ) -> Result<Entity, ZapataError> {
         let human = match self.get_next_entity() {
             Ok(entity) => entity,
             Err(e) => return Err(e),
@@ -24,7 +29,7 @@ impl ECS {
         fill_new_entity_or_err!(
             human,
             self.physics,
-            component::Physics::new(21.0, pos, true)
+            component::Physics::new(21.0, pos, heading, true)
         );
         fill_new_entity_or_err!(human, self.collider, component::Collider::human());
         fill_new_entity_or_err!(human, self.health, component::Health::new(100, Some(75)));

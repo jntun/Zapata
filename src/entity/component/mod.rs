@@ -6,6 +6,7 @@ pub(crate) mod printer;
 use crate::{
     entity::Entity,
     error::ZapataError,
+    kit,
     physics::{Effect, Hitbox, Vec3},
 };
 
@@ -34,6 +35,7 @@ pub struct Physics {
     mass: f64,
     momentum: Vec3,
     position: Vec3,
+    heading: kit::Float2,
     effects: Vec<Effect>,
 }
 

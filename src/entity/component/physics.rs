@@ -5,29 +5,29 @@ use {
             Entity,
         },
         error::ZapataError,
+        kit::Float2,
         physics::{Effect, Vec3},
     },
     std::fmt::{Debug, Formatter},
 };
 
 impl Physics {
-    pub fn new(mass: f64, position: Option<Vec3>, start_on: bool) -> Self {
-        match position {
-            Some(position) => Self {
-                on: start_on,
-                mass,
-                momentum: Vec3::new(0.0, 0.0, 0.0),
-                position,
-                effects: Vec::new(),
-            },
-            None => Self {
-                on: start_on,
-                mass,
-                momentum: Vec3::new(0.0, 0.0, 0.0),
-                position: Vec3::new(0.0, 0.0, 0.0),
-                effects: Vec::new(),
-            },
+    pub fn new(mass: f64, position: Option<Vec3>, heading: Option<Float2>, start_on: bool) -> Self {
+        let mut physx = Self {
+            on: start_on,
+            mass,
+            momentum: Vec3::default(),
+            position: Vec3::default(),
+            heading: Float2::new(0.0, 0.0),
+            effects: Vec::new(),
+        };
+        if let Some(pos) = position {
+            physx.position = pos
         }
+        if let Some(head) = heading {
+            physx.heading = head
+        }
+        physx
     }
 
     pub fn add_effect(&mut self, effect: Effect) {
@@ -72,6 +72,7 @@ impl Default for Physics {
             mass: 1.0,
             momentum: Vec3::default(),
             position: Vec3::default(),
+            heading: Float2::new(0.0, 0.0),
             effects: Vec::new(),
         }
     }
@@ -83,6 +84,7 @@ impl Debug for Physics {
             .field("mass", &self.mass)
             .field("momentum", &self.momentum)
             .field("position", &self.position)
+            .field("heading", &self.heading)
             .field("effects", &self.effects)
             .finish()
     }
