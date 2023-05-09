@@ -1,5 +1,6 @@
 mod entity;
 mod error;
+mod kit;
 mod physics;
 mod scene;
 
